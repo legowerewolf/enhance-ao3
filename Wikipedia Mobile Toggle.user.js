@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         Wikipedia Mobile Toggle
-// @version      0.2
-// @updateURL    https://github.com/legowerewolf/Userscripts/raw/master/Wikipedia%20Mobile%20Toggle.user.js
-// @downloadURL  https://github.com/legowerewolf/Userscripts/raw/master/Wikipedia%20Mobile%20Toggle.user.js
+// @version      0.3
+// @updateURL    https://raw.githubusercontent.com/legowerewolf/Userscripts/master/Wikipedia%20Mobile%20Toggle.user.js
+// @downloadURL  https://raw.githubusercontent.com/legowerewolf/Userscripts/master/Wikipedia%20Mobile%20Toggle.user.js
 // @description  Switch back and forth between mobile and desktop based on screen width.
 // @author       legowerewolf
 // @match        https://en.wikipedia.org/*

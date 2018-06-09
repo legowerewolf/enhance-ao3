@@ -1,6 +1,8 @@
 // ==UserScript==
 // @name         Auto-purchase Free Books
-// @version      0.1
+// @version      0.2
+// @updateURL    https://github.com/legowerewolf/Userscripts/raw/master/Auto-purchase%20Free%20Books.user.js
+// @downloadURL  https://github.com/legowerewolf/Userscripts/raw/master/Auto-purchase%20Free%20Books.user.js
 // @description  Automatically purchase free ebooks from Amazon and Google Play
 // @author       legowerewolf
 // @match        https://play.google.com/store/books/details*

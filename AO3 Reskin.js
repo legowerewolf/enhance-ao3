@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         AO3 Reskin
 // @namespace    legowerewolf.tk
-// @version      0.1.1
+// @version      0.1.2
 // @updateURL    https://raw.githubusercontent.com/legowerewolf/Userscripts/master/AO3%20Reskin.js
 // @downloadURL  https://raw.githubusercontent.com/legowerewolf/Userscripts/master/AO3%20Reskin.js
 // @description  Capture work data from Archive of Our Own.

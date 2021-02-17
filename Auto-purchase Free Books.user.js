@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Auto-purchase Free Books
-// @version      0.5
+// @version      0.5.1
 // @updateURL    https://raw.githubusercontent.com/legowerewolf/Userscripts/master/Auto-purchase%20Free%20Books.user.js
 // @downloadURL  https://raw.githubusercontent.com/legowerewolf/Userscripts/master/Auto-purchase%20Free%20Books.user.js
 // @description  Automatically purchase free ebooks from Amazon and Google Play
@@ -73,9 +73,8 @@
 				document.getElementById("one-click-button").form.submit();
 			}
 		} else if (
-			window.location.href.includes(
-				"/kindle-dbs/" && !window.location.href.includes("thankYouPage")
-			)
+			window.location.href.includes("/kindle-dbs/") &&
+			!window.location.href.includes("thankYouPage")
 		) {
 			document.querySelector(".a-button-input").click();
 		}

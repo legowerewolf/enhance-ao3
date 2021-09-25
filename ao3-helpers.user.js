@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name			AO3 Helpers
 // @namespace		legowerewolf.net
-// @version			0.2.0
+// @version			0.2.1
 // @updateURL		https://raw.githubusercontent.com/legowerewolf/Userscripts/master/ao3-helpers.user.js
 // @downloadURL		https://raw.githubusercontent.com/legowerewolf/Userscripts/master/ao3-helpers.user.js
 // @description		Capture work data from Archive of Our Own.
@@ -67,6 +67,8 @@ function getWorkData() {
 }
 
 function main() {
+	if (window.location.pathname.endsWith("/new")) return;
+
 	const data = getWorkData();
 	console.debug(data);
 }

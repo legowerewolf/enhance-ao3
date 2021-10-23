@@ -77,11 +77,11 @@ function main() {
 		if (event.target.tagName == "INPUT") return; // don't interfere with input fields
 		switch (event.key) {
 			case "ArrowLeft":
-				document.querySelector("li.chapter.previous a").click();
+				document.querySelector("li.chapter.previous a")?.click();
 				break;
 
 			case "ArrowRight":
-				document.querySelector("li.chapter.next a").click();
+				document.querySelector("li.chapter.next a")?.click();
 				break;
 
 			default:

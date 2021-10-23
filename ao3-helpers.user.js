@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name			AO3 Helpers
 // @namespace		legowerewolf.net
-// @version			0.2.2
+// @version			0.2.3
 // @updateURL		https://raw.githubusercontent.com/legowerewolf/Userscripts/master/ao3-helpers.user.js
 // @downloadURL		https://raw.githubusercontent.com/legowerewolf/Userscripts/master/ao3-helpers.user.js
 // @description		Capture work data from Archive of Our Own.
@@ -75,16 +75,21 @@ function main() {
 	// add chapter-nav keybinds
 	document.addEventListener("keyup", (event) => {
 		if (event.target.tagName == "INPUT") return; // don't interfere with input fields
-		switch (event.key) {
-			case "ArrowLeft":
+		switch (event.key.toLowerCase()) {
+			case "arrowleft":
 				document.querySelector("li.chapter.previous a")?.click();
 				break;
 
-			case "ArrowRight":
+			case "arrowright":
 				document.querySelector("li.chapter.next a")?.click();
 				break;
 
+			case "l":
+				document.getElementById("kudo_submit").click();
+				break;
+
 			default:
+				console.debug("caught unbound key event:", event);
 				break;
 		}
 	});

@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name			AO3 Helpers
 // @namespace		legowerewolf.net
-// @version			0.2.1
+// @version			0.2.2
 // @updateURL		https://raw.githubusercontent.com/legowerewolf/Userscripts/master/ao3-helpers.user.js
 // @downloadURL		https://raw.githubusercontent.com/legowerewolf/Userscripts/master/ao3-helpers.user.js
 // @description		Capture work data from Archive of Our Own.
@@ -67,12 +67,30 @@ function getWorkData() {
 }
 
 function main() {
-	if (window.location.pathname.endsWith("/new")) return;
+	if (window.location.pathname.endsWith("/new")) return; // ignore the new works page
 
 	const data = getWorkData();
 	console.debug(data);
+
+	// add chapter-nav keybinds
+	document.addEventListener("keyup", (event) => {
+		if (event.target.tagName == "INPUT") return; // don't interfere with input fields
+		switch (event.key) {
+			case "ArrowLeft":
+				document.querySelector("li.chapter.previous a").click();
+				break;
+
+			case "ArrowRight":
+				document.querySelector("li.chapter.next a").click();
+				break;
+
+			default:
+				break;
+		}
+	});
 }
 
+// wait for the page to finish loading before running the script
 if (document.readyState === "loading") {
 	document.addEventListener("load", main);
 } else {

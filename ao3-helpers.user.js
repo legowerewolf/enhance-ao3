@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name			AO3 Helpers
 // @namespace		legowerewolf.net
-// @version			0.2.4
+// @version			0.2.5
 // @updateURL		https://raw.githubusercontent.com/legowerewolf/Userscripts/master/ao3-helpers.user.js
 // @downloadURL		https://raw.githubusercontent.com/legowerewolf/Userscripts/master/ao3-helpers.user.js
 // @description		Capture work data from Archive of Our Own.
@@ -17,7 +17,9 @@ function getWorkData() {
 	let title = document.querySelector(".title.heading").innerText.trim();
 
 	let id = -1;
-	let loc = document.querySelector("li.share a").href.match(/works\/(\d+)/);
+	let loc = (
+		document.querySelector("li.share a") ?? window.location
+	).href.match(/works\/(\d+)/);
 	if (1 in loc) id = parseInt(loc[1]);
 	else console.error("Could not find work ID.");
 

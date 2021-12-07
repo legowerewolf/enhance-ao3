@@ -3,9 +3,10 @@ javascript: (() => {
 		const URLmods = {
 			"archiveofourown.org": () => {
 				if (url.pathname.startsWith("/works/")) {
-					url.pathname = url.pathname.match(
-						/\/works\/\d*/
-					)[0]; /* Trim to just the work ID */
+					url.pathname =
+						url.pathname.match(
+							/\/works\/\d*/
+						)[0]; /* Trim to just the work ID */
 					url.searchParams.set(
 						"view_adult",
 						"true"
@@ -32,7 +33,17 @@ javascript: (() => {
 		"height=200,width=500"
 	);
 
+	let closeEventController = new AbortController();
+	window.addEventListener(
+		"beforeunload",
+		() => {
+			w.close();
+		},
+		{ signal: closeEventController.signal }
+	);
+
 	setTimeout(() => {
 		w.close();
+		closeEventController.abort();
 	}, 5 * 1000);
 })();

@@ -30,7 +30,7 @@ javascript: (() => {
 	let w = window.open(
 		pocketSubmitURL.toString(),
 		"Pocket",
-		"height=200,width=500"
+		"popup,left=250,top=250,height=200,width=500"
 	);
 
 	let closeEventController = new AbortController();

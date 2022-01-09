@@ -1,10 +1,10 @@
 // ==UserScript==
 // @name			AO3 Helpers
 // @namespace		legowerewolf.net
-// @version			0.2.5
+// @version			0.2.6
 // @updateURL		https://raw.githubusercontent.com/legowerewolf/Userscripts/master/ao3-helpers.user.js
 // @downloadURL		https://raw.githubusercontent.com/legowerewolf/Userscripts/master/ao3-helpers.user.js
-// @description		Capture work data from Archive of Our Own.
+// @description		Parse work data from AO3 and add hotkeys for navigating works and adding kudos.
 // @author			legowerewolf.net
 // @match			https://archiveofourown.org/works/*
 // @match			https://archiveofourown.org/chapters/*
@@ -13,7 +13,7 @@
 
 "use strict";
 
-function getWorkData() {
+function work_getData() {
 	let title = document.querySelector(".title.heading").innerText.trim();
 
 	let id = -1;
@@ -68,15 +68,10 @@ function getWorkData() {
 	};
 }
 
-function main() {
-	if (window.location.pathname.endsWith("/new")) return; // ignore the new works page
-
-	const data = getWorkData();
-	console.debug(data);
-
-	// add chapter-nav keybinds
+function work_addHotkeys() {
 	document.addEventListener("keyup", (event) => {
 		if (["INPUT", "TEXTAREA"].find((el) => el == event.target.tagName)) return; // don't interfere with input fields
+
 		switch (event.key.toLowerCase()) {
 			case "arrowleft":
 				document.querySelector("li.chapter.previous a")?.click();
@@ -95,6 +90,15 @@ function main() {
 				break;
 		}
 	});
+}
+
+function main() {
+	if (window.location.pathname.match(/\/(works|chapters)\/\d+\/?$/)) {
+		const data = work_getData();
+		console.debug(data);
+
+		work_addHotkeys();
+	}
 }
 
 // wait for the page to finish loading before running the script

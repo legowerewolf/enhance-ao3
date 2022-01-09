@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name			AO3 Helpers
 // @namespace		legowerewolf.net
-// @version			0.2.6
+// @version			0.2.7
 // @updateURL		https://raw.githubusercontent.com/legowerewolf/Userscripts/master/ao3-helpers.user.js
 // @downloadURL		https://raw.githubusercontent.com/legowerewolf/Userscripts/master/ao3-helpers.user.js
 // @description		Parse work data from AO3 and add hotkeys for navigating works and adding kudos.
@@ -70,7 +70,7 @@ function work_getData() {
 
 function work_addHotkeys() {
 	document.addEventListener("keyup", (event) => {
-		if (["INPUT", "TEXTAREA"].find((el) => el == event.target.tagName)) return; // don't interfere with input fields
+		if (["INPUT", "TEXTAREA"].includes(event.target.tagName)) return; // don't interfere with input fields
 
 		switch (event.key.toLowerCase()) {
 			case "arrowleft":
@@ -94,10 +94,41 @@ function work_addHotkeys() {
 
 function main() {
 	if (window.location.pathname.match(/\/(works|chapters)\/\d+\/?$/)) {
+		// this is a work
+
 		const data = work_getData();
 		console.debug(data);
 
 		work_addHotkeys();
+	}
+
+	if (
+		window.location.pathname.endsWith("/search") &&
+		!(
+			window.location.search.includes("&edit_search=true&") ||
+			window.location.search == ""
+		)
+	) {
+		// this is a list of search results
+
+		// add an event listener for keyboard navigation
+		document.addEventListener("keyup", (event) => {
+			if (["INPUT", "TEXTAREA"].includes(event.target.tagName)) return; // don't interfere with input fields
+
+			switch (event.key.toLowerCase()) {
+				case "arrowleft":
+					document.querySelector("a[rel='prev']")?.click();
+					break;
+
+				case "arrowright":
+					document.querySelector("a[rel='next']")?.click();
+					break;
+
+				default:
+					console.debug("caught unbound key event:", event);
+					break;
+			}
+		});
 	}
 }
 

@@ -1,17 +1,27 @@
 // ==UserScript==
 // @name			AO3 Helpers
 // @namespace		legowerewolf.net
-// @version			0.2.7
+// @version			0.2.8
 // @updateURL		https://raw.githubusercontent.com/legowerewolf/Userscripts/master/ao3-helpers.user.js
 // @downloadURL		https://raw.githubusercontent.com/legowerewolf/Userscripts/master/ao3-helpers.user.js
 // @description		Parse work data from AO3 and add hotkeys for navigating works and adding kudos.
 // @author			legowerewolf.net
-// @match			https://archiveofourown.org/works/*
-// @match			https://archiveofourown.org/chapters/*
+// @match			https://archiveofourown.org/*
 // @grant			none
 // ==/UserScript==
 
 "use strict";
+
+const INDEX_HOTKEYS = {
+	arrowleft: "a[rel='prev']",
+	arrowright: "a[rel='next']",
+};
+
+const WORK_HOTKEYS = {
+	arrowleft: "li.chapter.previous a",
+	arrowright: "li.chapter.next a",
+	l: "#kudo_submit",
+};
 
 function work_getData() {
 	let title = document.querySelector(".title.heading").innerText.trim();
@@ -68,67 +78,50 @@ function work_getData() {
 	};
 }
 
-function work_addHotkeys() {
-	document.addEventListener("keyup", (event) => {
-		if (["INPUT", "TEXTAREA"].includes(event.target.tagName)) return; // don't interfere with input fields
+const hotkey_handler = (hotkey_map) => (event) => {
+	if (["INPUT", "TEXTAREA"].includes(event.target.tagName)) return; // don't interfere with input fields
 
-		switch (event.key.toLowerCase()) {
-			case "arrowleft":
-				document.querySelector("li.chapter.previous a")?.click();
+	let key = event.key.toLowerCase();
+	if (key in hotkey_map) {
+		let action = hotkey_map[key];
+
+		switch (typeof action) {
+			case "string":
+				document.querySelector(action)?.click();
 				break;
-
-			case "arrowright":
-				document.querySelector("li.chapter.next a")?.click();
+			case "function":
+				action();
 				break;
-
-			case "l":
-				document.getElementById("kudo_submit").click();
-				break;
-
 			default:
-				console.debug("caught unbound key event:", event);
+				console.error("unrecognized action type");
 				break;
 		}
-	});
-}
+	} else {
+		console.debug(`unhandled key event: ${key}`);
+	}
+};
 
 function main() {
-	if (window.location.pathname.match(/\/(works|chapters)\/\d+\/?$/)) {
-		// this is a work
+	let page_main = document.getElementById("main");
 
+	if (
+		// this is a work
+		page_main.classList.contains("works-show") ||
+		page_main.classList.contains("chapters-show")
+	) {
 		const data = work_getData();
 		console.debug(data);
 
-		work_addHotkeys();
+		document.addEventListener("keyup", hotkey_handler(WORK_HOTKEYS));
 	}
 
 	if (
-		window.location.pathname.endsWith("/search") &&
-		!(
-			window.location.search.includes("&edit_search=true&") ||
-			window.location.search == ""
-		)
+		// this is a list of works or bookmarks
+		page_main.classList.contains("works-index") ||
+		page_main.classList.contains("bookmarks-index")
 	) {
-		// this is a list of search results
-
 		// add an event listener for keyboard navigation
-		document.addEventListener("keyup", (event) => {
-			if (["INPUT", "TEXTAREA"].includes(event.target.tagName)) return; // don't interfere with input fields
-
-			switch (event.key.toLowerCase()) {
-				case "arrowleft":
-					document.querySelector("a[rel='prev']")?.click();
-					break;
-
-				case "arrowright":
-					document.querySelector("a[rel='next']")?.click();
-					break;
-
-				default:
-					console.debug("caught unbound key event:", event);
-					break;
-			}
-		});
+		document.addEventListener("keyup", hotkey_handler(INDEX_HOTKEYS));
 	}
 }
 

@@ -6,7 +6,7 @@
 // @downloadURL		https://raw.githubusercontent.com/legowerewolf/Userscripts/master/link-sanitizer.user.js
 // @description		Automatically strip query strings from links.
 // @author			legowerewolf.net
-// @match			*://*/*
+// @match			https://*.twitter.com/*
 // @grant			none
 // ==/UserScript==
 

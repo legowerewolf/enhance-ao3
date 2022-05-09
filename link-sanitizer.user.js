@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name			Link sanitizer
 // @namespace		legowerewolf.net
-// @version			0.0.1
+// @version			0.0.2
 // @updateURL		https://raw.githubusercontent.com/legowerewolf/Userscripts/master/link-sanitizer.user.js
 // @downloadURL		https://raw.githubusercontent.com/legowerewolf/Userscripts/master/link-sanitizer.user.js
 // @description		Automatically strip query strings from links.

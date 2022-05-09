@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name			AO3 Helpers
 // @namespace		legowerewolf.net
-// @version			0.2.8
+// @version			0.2.9
 // @updateURL		https://raw.githubusercontent.com/legowerewolf/Userscripts/master/ao3-helpers.user.js
 // @downloadURL		https://raw.githubusercontent.com/legowerewolf/Userscripts/master/ao3-helpers.user.js
 // @description		Parse work data from AO3 and add hotkeys for navigating works and adding kudos.
@@ -21,7 +21,37 @@ const WORK_HOTKEYS = {
 	arrowleft: "li.chapter.previous a",
 	arrowright: "li.chapter.next a",
 	l: "#kudo_submit",
+	p: pocket_submit,
 };
+
+function pocket_submit() {
+	let pocketSubmitURL = new URL("https://getpocket.com/save");
+	pocketSubmitURL.searchParams.set(
+		"url",
+		`https://archiveofourown.org/works/${document.AO3_work_data.id}?view_adult=true&view_full_work=true`
+	);
+	pocketSubmitURL.searchParams.set("title", document.title);
+
+	let w = window.open(
+		pocketSubmitURL.toString(),
+		"Pocket",
+		"popup,left=250,top=250,height=200,width=500"
+	);
+
+	let closeEventController = new AbortController();
+	window.addEventListener(
+		"beforeunload",
+		() => {
+			w.close();
+		},
+		{ signal: closeEventController.signal }
+	);
+
+	setTimeout(() => {
+		w.close();
+		closeEventController.abort();
+	}, 5 * 1000);
+}
 
 function work_getData() {
 	let title = document.querySelector(".title.heading").innerText.trim();
@@ -109,8 +139,8 @@ function main() {
 		page_main.classList.contains("works-show") ||
 		page_main.classList.contains("chapters-show")
 	) {
-		const data = work_getData();
-		console.debug(data);
+		document.AO3_work_data = work_getData();
+		console.debug(document.AO3_work_data);
 
 		document.addEventListener("keyup", hotkey_handler(WORK_HOTKEYS));
 	}

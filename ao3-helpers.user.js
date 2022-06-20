@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name			AO3 Helpers
 // @namespace		legowerewolf.net
-// @version			0.2.9
+// @version			0.2.10
 // @updateURL		https://raw.githubusercontent.com/legowerewolf/Userscripts/master/ao3-helpers.user.js
 // @downloadURL		https://raw.githubusercontent.com/legowerewolf/Userscripts/master/ao3-helpers.user.js
 // @description		Parse work data from AO3 and add hotkeys for navigating works and adding kudos.
@@ -63,7 +63,9 @@ function work_getData() {
 	if (1 in loc) id = parseInt(loc[1]);
 	else console.error("Could not find work ID.");
 
-	let authorLink = document.querySelector("[rel=author]");
+	let authorLink =
+		document.querySelector("[rel=author]") ??
+		document.querySelector("h2.title + h3.byline");
 	let author = {
 		name: authorLink.innerText.trim(),
 		profile: authorLink.href,
@@ -139,8 +141,12 @@ function main() {
 		page_main.classList.contains("works-show") ||
 		page_main.classList.contains("chapters-show")
 	) {
-		document.AO3_work_data = work_getData();
-		console.debug(document.AO3_work_data);
+		try {
+			document.AO3_work_data = work_getData();
+			console.debug(document.AO3_work_data);
+		} catch (error) {
+			console.error("Could not get work data.", error);
+		}
 
 		document.addEventListener("keyup", hotkey_handler(WORK_HOTKEYS));
 	}

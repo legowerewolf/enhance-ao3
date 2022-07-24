@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name			AO3 Helpers
 // @namespace		legowerewolf.net
-// @version			0.2.10
+// @version			0.3.0
 // @updateURL		https://raw.githubusercontent.com/legowerewolf/Userscripts/master/ao3-helpers.user.js
 // @downloadURL		https://raw.githubusercontent.com/legowerewolf/Userscripts/master/ao3-helpers.user.js
 // @description		Parse work data from AO3 and add hotkeys for navigating works and adding kudos.
@@ -22,6 +22,7 @@ const WORK_HOTKEYS = {
 	arrowright: "li.chapter.next a",
 	l: "#kudo_submit",
 	p: pocket_submit,
+	b: "#bookmark-form input[type='submit']",
 };
 
 function pocket_submit() {

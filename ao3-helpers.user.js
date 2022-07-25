@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name			AO3 Helpers
 // @namespace		legowerewolf.net
-// @version			0.3.1
+// @version			0.3.2
 // @updateURL		https://raw.githubusercontent.com/legowerewolf/Userscripts/master/ao3-helpers.user.js
 // @downloadURL		https://raw.githubusercontent.com/legowerewolf/Userscripts/master/ao3-helpers.user.js
 // @description		Parse work data from AO3 and add hotkeys for navigating works and adding kudos.
@@ -138,7 +138,7 @@ function main() {
 	document.addEventListener("keyup", hotkey_handler(HOTKEYS));
 
 	// work processing
-	if (document.querySelector("#main div.work")) {
+	if (document.querySelector("#workskin")) {
 		// add work-specific hotkeys
 		document.addEventListener("keyup", hotkey_handler(WORK_HOTKEYS));
 

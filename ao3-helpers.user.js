@@ -1,10 +1,10 @@
 // ==UserScript==
-// @name			AO3 Helpers
+// @name			AO3 Hotkeys
 // @namespace		legowerewolf.net
 // @version			0.3.2
 // @updateURL		https://raw.githubusercontent.com/legowerewolf/Userscripts/master/ao3-helpers.user.js
 // @downloadURL		https://raw.githubusercontent.com/legowerewolf/Userscripts/master/ao3-helpers.user.js
-// @description		Parse work data from AO3 and add hotkeys for navigating works and adding kudos.
+// @description		Adds hotkeys to AO3 for navigation, kudosing, bookmarking, subscribing, and adding to your Pocket reading list.
 // @author			legowerewolf.net
 // @match			https://archiveofourown.org/*
 // @grant			none

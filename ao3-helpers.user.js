@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name			AO3 Helpers
 // @namespace		legowerewolf.net
-// @version			0.3.0
+// @version			0.3.1
 // @updateURL		https://raw.githubusercontent.com/legowerewolf/Userscripts/master/ao3-helpers.user.js
 // @downloadURL		https://raw.githubusercontent.com/legowerewolf/Userscripts/master/ao3-helpers.user.js
 // @description		Parse work data from AO3 and add hotkeys for navigating works and adding kudos.
@@ -12,17 +12,16 @@
 
 "use strict";
 
-const INDEX_HOTKEYS = {
-	arrowleft: "a[rel='prev']",
-	arrowright: "a[rel='next']",
+const HOTKEYS = {
+	arrowleft: "a[rel='prev'], li.chapter.previous a",
+	arrowright: "a[rel='next'], li.chapter.next a",
+	l: "#kudo_submit",
+	b: "#bookmark-form input[type='submit'][value='Create']",
+	s: "#new_subscription input[type='submit']",
 };
 
 const WORK_HOTKEYS = {
-	arrowleft: "li.chapter.previous a",
-	arrowright: "li.chapter.next a",
-	l: "#kudo_submit",
 	p: pocket_submit,
-	b: "#bookmark-form input[type='submit']",
 };
 
 function pocket_submit() {
@@ -135,30 +134,21 @@ const hotkey_handler = (hotkey_map) => (event) => {
 };
 
 function main() {
-	let page_main = document.getElementById("main");
+	// add global hotkeys
+	document.addEventListener("keyup", hotkey_handler(HOTKEYS));
 
-	if (
-		// this is a work
-		page_main.classList.contains("works-show") ||
-		page_main.classList.contains("chapters-show")
-	) {
+	// work processing
+	if (document.querySelector("#main div.work")) {
+		// add work-specific hotkeys
+		document.addEventListener("keyup", hotkey_handler(WORK_HOTKEYS));
+
+		// parse work data from the header
 		try {
 			document.AO3_work_data = work_getData();
 			console.debug(document.AO3_work_data);
 		} catch (error) {
 			console.error("Could not get work data.", error);
 		}
-
-		document.addEventListener("keyup", hotkey_handler(WORK_HOTKEYS));
-	}
-
-	if (
-		// this is a list of works or bookmarks
-		page_main.classList.contains("works-index") ||
-		page_main.classList.contains("bookmarks-index")
-	) {
-		// add an event listener for keyboard navigation
-		document.addEventListener("keyup", hotkey_handler(INDEX_HOTKEYS));
 	}
 }
 

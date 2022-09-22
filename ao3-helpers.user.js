@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name			AO3 Hotkeys
 // @namespace		legowerewolf.net
-// @version			0.3.2
+// @version			0.3.3
 // @updateURL		https://raw.githubusercontent.com/legowerewolf/Userscripts/master/ao3-helpers.user.js
 // @downloadURL		https://raw.githubusercontent.com/legowerewolf/Userscripts/master/ao3-helpers.user.js
 // @description		Adds hotkeys to AO3 for navigation, kudosing, bookmarking, subscribing, and adding to your Pocket reading list.
@@ -13,15 +13,17 @@
 "use strict";
 
 const HOTKEYS = {
-	arrowleft: "a[rel='prev'], li.chapter.previous a",
-	arrowright: "a[rel='next'], li.chapter.next a",
-	l: "#kudo_submit",
+	arrowleft:
+		"a[rel='prev'], li.chapter.previous a, dd.series span:only-child a.previous",
+	arrowright:
+		"a[rel='next'], li.chapter.next a, dd.series span:only-child a.next",
 	b: "#bookmark-form input[type='submit'][value='Create']",
-	s: "#new_subscription input[type='submit']",
+	s: "#new_subscription input[type='submit']:last-child", // this is brittle; we should only select when there's no "input[name='_method'][value='delete']" in this form
 };
 
 const WORK_HOTKEYS = {
 	p: pocket_submit,
+	l: "#kudo_submit",
 };
 
 function pocket_submit() {

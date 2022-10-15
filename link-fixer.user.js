@@ -3,7 +3,7 @@
 // @namespace   	legowerewolf.net
 // @match       	*://*/*
 // @grant       	none
-// @version     	1.0
+// @version     	1.1
 // @updateURL		https://raw.githubusercontent.com/legowerewolf/Userscripts/master/link-fixer.user.js
 // @downloadURL		https://raw.githubusercontent.com/legowerewolf/Userscripts/master/link-fixer.user.js
 // @author      	legowerewolf.net
@@ -25,9 +25,14 @@ function debounce(func, timeout = 100) {
 
 const handler = () => {
 	document.querySelectorAll(`a[href^="${REDDITMAIL}"]`).forEach((a) => {
-		a.href = decodeURIComponent(
-			a.href.substr("https://click.redditmail.com/CL0/".length)
-		).split("?")[0];
+		// cut off the click.redditmail.com prefix, decode the url, and cut off the querystring
+		a.href = decodeURIComponent(a.href.substr(REDDITMAIL.length)).split("?")[0];
+
+		// deal with Gmail's proclivity to add its own redirect, too
+		a.dataset.saferedirecturl =
+			a.dataset.saferedirecturl ?? null == null
+				? a.href
+				: a.dataset.saferedirecturl;
 	});
 };
 

@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name			AO3 Hotkeys
 // @namespace		legowerewolf.net
-// @version			0.3.3
+// @version			0.3.4
 // @updateURL		https://raw.githubusercontent.com/legowerewolf/Userscripts/master/ao3-helpers.user.js
 // @downloadURL		https://raw.githubusercontent.com/legowerewolf/Userscripts/master/ao3-helpers.user.js
 // @description		Adds hotkeys to AO3 for navigation, kudosing, bookmarking, subscribing, and adding to your Pocket reading list.
@@ -12,19 +12,24 @@
 
 "use strict";
 
+// section: hotkey declarations
+
 const HOTKEYS = {
 	arrowleft:
 		"a[rel='prev'], li.chapter.previous a, dd.series span:only-child a.previous",
 	arrowright:
 		"a[rel='next'], li.chapter.next a, dd.series span:only-child a.next",
-	b: "#bookmark-form input[type='submit'][value='Create']",
+	b: "#bookmark-form input[type='submit'][name='commit']",
 	s: "#new_subscription input[type='submit']:last-child", // this is brittle; we should only select when there's no "input[name='_method'][value='delete']" in this form
+	r: make_recommendation,
 };
 
 const WORK_HOTKEYS = {
 	p: pocket_submit,
 	l: "#kudo_submit",
 };
+
+// section: functions for hotkeys
 
 function pocket_submit() {
 	let pocketSubmitURL = new URL("https://getpocket.com/save");
@@ -54,6 +59,37 @@ function pocket_submit() {
 		closeEventController.abort();
 	}, 5 * 1000);
 }
+
+function make_recommendation() {
+	let rec_checkbox = document.querySelector("#bookmark_rec");
+	if (rec_checkbox) rec_checkbox.checked = true;
+	document.querySelector(HOTKEYS.b)?.click();
+}
+
+// section: functions that execute automatically, as part of initialization
+
+const hotkey_handler = (hotkey_map) => (event) => {
+	if (["INPUT", "TEXTAREA"].includes(event.target.tagName)) return; // don't interfere with input fields
+
+	let key = event.key.toLowerCase();
+	if (key in hotkey_map) {
+		let action = hotkey_map[key];
+
+		switch (typeof action) {
+			case "string":
+				document.querySelector(action)?.click();
+				break;
+			case "function":
+				action();
+				break;
+			default:
+				console.error("unrecognized action type");
+				break;
+		}
+	} else {
+		console.debug(`unhandled key event: ${key}`);
+	}
+};
 
 function work_getData() {
 	let title = document.querySelector(".title.heading").innerText.trim();
@@ -111,29 +147,6 @@ function work_getData() {
 		},
 	};
 }
-
-const hotkey_handler = (hotkey_map) => (event) => {
-	if (["INPUT", "TEXTAREA"].includes(event.target.tagName)) return; // don't interfere with input fields
-
-	let key = event.key.toLowerCase();
-	if (key in hotkey_map) {
-		let action = hotkey_map[key];
-
-		switch (typeof action) {
-			case "string":
-				document.querySelector(action)?.click();
-				break;
-			case "function":
-				action();
-				break;
-			default:
-				console.error("unrecognized action type");
-				break;
-		}
-	} else {
-		console.debug(`unhandled key event: ${key}`);
-	}
-};
 
 function main() {
 	// add global hotkeys

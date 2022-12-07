@@ -4,7 +4,7 @@
 // @version			0.3.4
 // @updateURL		https://raw.githubusercontent.com/legowerewolf/Userscripts/master/ao3-helpers.user.js
 // @downloadURL		https://raw.githubusercontent.com/legowerewolf/Userscripts/master/ao3-helpers.user.js
-// @description		Adds hotkeys to AO3 for navigation, kudosing, bookmarking, subscribing, and adding to your Pocket reading list.
+// @description		Adds hotkeys to AO3 for navigation and work- and series-related actions.
 // @author			legowerewolf.net
 // @match			https://archiveofourown.org/*
 // @grant			none

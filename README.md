@@ -14,8 +14,14 @@ Adds hotkeys to AO3 for:
 - kudosing a work (`l`)
 - saving a work to Pocket (`p`)
 
-Also includes an experiment to parse metadata from work pages. **This does not
-send any data to anyone.**
+Also includes:
+
+- an experiment to parse metadata from work pages. **This does not send any data
+  to anyone.** You can view what's been parsed in the browser console as
+  `document.AO3_work_data`.
+- [prefetch hinting][mdn-prefetch-faq] for next chapters/works/index pages. As
+  of otwarchive v0.9.328.4, this is ineffective, but it should provide benefits
+  in the future.
 
 ### link-sanitizer (functional, in-development)
 
@@ -44,3 +50,6 @@ Another method of redirection is recommended.**
 
 Switches between desktop and mobile Wikipedia based on screen width. Use the
 "Vector (2022)" skin in responsive mode instead.
+
+[mdn-prefetch-faq]:
+	https://developer.mozilla.org/en-US/docs/Web/HTTP/Link_prefetching_FAQ

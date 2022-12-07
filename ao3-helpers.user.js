@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name			AO3 Hotkeys
 // @namespace		legowerewolf.net
-// @version			0.3.4
+// @version			0.4.0
 // @updateURL		https://raw.githubusercontent.com/legowerewolf/Userscripts/master/ao3-helpers.user.js
 // @downloadURL		https://raw.githubusercontent.com/legowerewolf/Userscripts/master/ao3-helpers.user.js
 // @description		Adds hotkeys to AO3 for navigation and work- and series-related actions.
@@ -18,20 +18,20 @@ const HOTKEYS = {
 	arrowleft:
 		"a[rel='prev'], li.chapter.previous a, dd.series span:only-child a.previous",
 	arrowright:
-		"a[rel='next'], li.chapter.next a, dd.series span:only-child a.next",
-	b: "#bookmark-form input[type='submit'][name='commit']",
+		"a[rel='next'], li.chapter.next a, dd.series span:only-child a.next", // this selector is reused for prefetch hinting
+	b: "#bookmark-form input[type='submit'][name='commit']", // selector is reused for committing recommendation bookmarks
 	s: "#new_subscription input[type='submit']:last-child", // this is brittle; we should only select when there's no "input[name='_method'][value='delete']" in this form
-	r: make_recommendation,
+	r: recommendBookmarkableObject,
 };
 
 const WORK_HOTKEYS = {
-	p: pocket_submit,
+	p: saveWorkToPocket,
 	l: "#kudo_submit",
 };
 
 // section: functions for hotkeys
 
-function pocket_submit() {
+function saveWorkToPocket() {
 	let pocketSubmitURL = new URL("https://getpocket.com/save");
 	pocketSubmitURL.searchParams.set(
 		"url",
@@ -60,7 +60,7 @@ function pocket_submit() {
 	}, 5 * 1000);
 }
 
-function make_recommendation() {
+function recommendBookmarkableObject() {
 	let rec_checkbox = document.querySelector("#bookmark_rec");
 	if (rec_checkbox) rec_checkbox.checked = true;
 	document.querySelector(HOTKEYS.b)?.click();
@@ -68,7 +68,7 @@ function make_recommendation() {
 
 // section: functions that execute automatically, as part of initialization
 
-const hotkey_handler = (hotkey_map) => (event) => {
+const hotkeyHandler = (hotkey_map) => (event) => {
 	if (["INPUT", "TEXTAREA"].includes(event.target.tagName)) return; // don't interfere with input fields
 
 	let key = event.key.toLowerCase();
@@ -91,7 +91,7 @@ const hotkey_handler = (hotkey_map) => (event) => {
 	}
 };
 
-function work_getData() {
+function getWorkData() {
 	let title = document.querySelector(".title.heading").innerText.trim();
 
 	let id = -1;
@@ -106,16 +106,13 @@ function work_getData() {
 		document.querySelector("h2.title + h3.byline");
 	let author = {
 		name: authorLink.innerText.trim(),
-		profile: authorLink.href,
+		link: authorLink.href,
 	};
 
 	let [chapters_complete, chapters_total] = document
 		.querySelector(".stats .chapters + .chapters")
 		.innerText.split("/")
 		.map((s) => parseInt(s) || -1);
-
-	let status_text =
-		chapters_complete != chapters_total ? "In Progress" : "Complete";
 
 	let tag_categories = new Set();
 	for (let node of document.querySelectorAll(".work.meta.group .tags")) {
@@ -129,8 +126,8 @@ function work_getData() {
 			document.querySelectorAll(`.${category}.tags .tag`)
 		).map((tag) => {
 			return {
-				tagName: tag.innerText,
-				tagLink: tag.href,
+				name: tag.innerText,
+				link: tag.href,
 			};
 		});
 	}
@@ -141,25 +138,42 @@ function work_getData() {
 		author,
 		tags,
 		status: {
-			text: status_text,
+			complete: chapters_complete == chapters_total,
 			chapters_complete,
 			chapters_total,
 		},
 	};
 }
 
+function addPrefetchLinks() {
+	let prefetchableLinks = document.querySelectorAll(HOTKEYS.arrowright);
+
+	for (let link of prefetchableLinks) {
+		let el = Object.assign(document.createElement("link"), {
+			rel: "next prefetch",
+			type: "text/html",
+			href: link.href.split("#")[0],
+		});
+
+		document.head.appendChild(el);
+	}
+}
+
 function main() {
 	// add global hotkeys
-	document.addEventListener("keyup", hotkey_handler(HOTKEYS));
+	document.addEventListener("keyup", hotkeyHandler(HOTKEYS));
+
+	// add prefetch links
+	addPrefetchLinks();
 
 	// work processing
 	if (document.querySelector("#workskin")) {
 		// add work-specific hotkeys
-		document.addEventListener("keyup", hotkey_handler(WORK_HOTKEYS));
+		document.addEventListener("keyup", hotkeyHandler(WORK_HOTKEYS));
 
 		// parse work data from the header
 		try {
-			document.AO3_work_data = work_getData();
+			document.AO3_work_data = getWorkData();
 			console.debug(document.AO3_work_data);
 		} catch (error) {
 			console.error("Could not get work data.", error);

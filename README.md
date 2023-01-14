@@ -1,18 +1,24 @@
-# Miscellaneous userscripts and bookmarks
+# Miscellaneous userscripts and bookmarklets
 
 ## Userscripts
+
+Install these by finding and opening the relevant file above, then clicking the
+"Raw" button. Your userscript extension should prompt you to install the script.
+
+Don't have a userscript extension? Try
+[Violentmonkey](https://violentmonkey.github.io/)!
 
 ### ao3-helpers (functional, active maintenance)
 
 Adds hotkeys to AO3 for:
 
-- navigation on works, between works in a series, and on index pages (left/right
-  arrow keys)
-- bookmarking a work or series (`b`)
-- recommending a work or series (`r`)
-- subscribing to a work, series, or author (`s`)
-- kudosing a work (`l`)
-- saving a work to Pocket (`p`)
+- navigation on works, between works in a series, and on index pages
+  (<kbd>←</kbd>, <kbd>→</kbd>)
+- bookmarking a work or series (<kbd>b</kbd>)
+- recommending a work or series (<kbd>r</kbd>)
+- subscribing to a work, series, or author (<kbd>s</kbd>)
+- kudosing a work (<kbd>l</kbd>)
+- saving a work to Pocket (<kbd>p</kbd>)
 
 Also includes:
 
@@ -20,8 +26,8 @@ Also includes:
   to anyone.** You can view what's been parsed in the browser console as
   `document.AO3_work_data`.
 - [prefetch hinting][mdn-prefetch-faq] for next chapters/works/index pages. As
-  of otwarchive v0.9.328.4, this is ineffective, but it should provide benefits
-  in the future.
+  of otwarchive v0.9.328.4 this has no effect, but it should make the reading
+  experience smoother in the future.
 
 ### link-sanitizer (functional, in-development)
 

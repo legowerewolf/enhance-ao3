@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name            AO3 Hotkeys
 // @namespace       legowerewolf.net
-// @version         0.4.0
+// @version         0.5.0
 // @updateURL       https://raw.githubusercontent.com/legowerewolf/Userscripts/master/ao3-helpers.user.js
 // @downloadURL     https://raw.githubusercontent.com/legowerewolf/Userscripts/master/ao3-helpers.user.js
 // @description     Adds hotkeys to AO3 for navigation and work- and series-related actions.
@@ -26,10 +26,25 @@ const HOTKEYS = {
 
 const WORK_HOTKEYS = {
 	p: saveWorkToPocket,
-	l: "#kudo_submit",
+	l: warnDeprecation("l", "k", "#kudo_submit"),
+	k: "#kudo_submit",
 };
 
 // section: functions for hotkeys
+
+function executeHotkeyAction(action) {
+	switch (typeof action) {
+		case "string":
+			document.querySelector(action)?.click();
+			break;
+		case "function":
+			action();
+			break;
+		default:
+			console.error("unrecognized action type");
+			break;
+	}
+}
 
 function saveWorkToPocket() {
 	let pocketSubmitURL = new URL("https://getpocket.com/save");
@@ -66,6 +81,17 @@ function recommendBookmarkableObject() {
 	document.querySelector(HOTKEYS.b)?.click();
 }
 
+function warnDeprecation(oldkey, newkey, action) {
+	return () => {
+		alert(
+			`The hotkey "${oldkey}" is deprecated. ${
+				newkey ? `Use "${newkey}" instead.` : ""
+			}`
+		);
+		executeHotkeyAction(action);
+	};
+}
+
 // section: functions that execute automatically, as part of initialization
 
 const hotkeyHandler = (hotkey_map) => (event) => {
@@ -74,18 +100,7 @@ const hotkeyHandler = (hotkey_map) => (event) => {
 	let key = event.key.toLowerCase();
 	if (key in hotkey_map) {
 		let action = hotkey_map[key];
-
-		switch (typeof action) {
-			case "string":
-				document.querySelector(action)?.click();
-				break;
-			case "function":
-				action();
-				break;
-			default:
-				console.error("unrecognized action type");
-				break;
-		}
+		executeHotkeyAction(action);
 	} else {
 		console.debug(`unhandled key event: ${key}`);
 	}

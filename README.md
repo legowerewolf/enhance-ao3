@@ -17,7 +17,7 @@ Adds hotkeys to AO3 for:
 - bookmarking a work or series (<kbd>b</kbd>)
 - recommending a work or series (<kbd>r</kbd>)
 - subscribing to a work, series, or author (<kbd>s</kbd>)
-- kudosing a work (<kbd>l</kbd>)
+- kudosing a work (<kbd>k</kbd>)
 - saving a work to Pocket (<kbd>p</kbd>)
 
 Also includes:

@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name            AO3 Hotkeys
 // @namespace       legowerewolf.net
-// @version         0.5.0
+// @version         0.5.1
 // @updateURL       https://raw.githubusercontent.com/legowerewolf/Userscripts/master/ao3-helpers.user.js
 // @downloadURL     https://raw.githubusercontent.com/legowerewolf/Userscripts/master/ao3-helpers.user.js
 // @description     Adds hotkeys to AO3 for navigation and work- and series-related actions.
@@ -19,9 +19,10 @@ const HOTKEYS = {
 		"a[rel='prev'], li.chapter.previous a, dd.series span:only-child a.previous",
 	arrowright:
 		"a[rel='next'], li.chapter.next a, dd.series span:only-child a.next", // this selector is reused for prefetch hinting
-	b: "#bookmark-form input[type='submit'][name='commit']", // selector is reused for committing recommendation bookmarks
+	b: "#bookmark-form input[type='submit'][name='commit']", // selector is reused for committing special bookmarks
 	s: "#new_subscription input[type='submit']:last-child", // this is brittle; we should only select when there's no "input[name='_method'][value='delete']" in this form
-	r: recommendBookmarkableObject,
+	r: createRecBookmark,
+	h: createPrivateBookmark,
 };
 
 const WORK_HOTKEYS = {
@@ -75,10 +76,18 @@ function saveWorkToPocket() {
 	}, 5 * 1000);
 }
 
-function recommendBookmarkableObject() {
-	let rec_checkbox = document.querySelector("#bookmark_rec");
-	if (rec_checkbox) rec_checkbox.checked = true;
+function createSpecialBookmark(checkboxSelector) {
+	let checkbox = document.querySelector(checkboxSelector);
+	if (checkbox) checkbox.checked = true;
 	document.querySelector(HOTKEYS.b)?.click();
+}
+
+function createRecBookmark() {
+	createSpecialBookmark("#bookmark_rec");
+}
+
+function createPrivateBookmark() {
+	createSpecialBookmark("#bookmark_private");
 }
 
 function warnDeprecation(oldkey, newkey, action) {

@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name            AO3 Hotkeys
 // @namespace       legowerewolf.net
-// @version         0.5.1
+// @version         0.5.2
 // @updateURL       https://raw.githubusercontent.com/legowerewolf/Userscripts/master/ao3-helpers.user.js
 // @downloadURL     https://raw.githubusercontent.com/legowerewolf/Userscripts/master/ao3-helpers.user.js
 // @description     Adds hotkeys to AO3 for navigation and work- and series-related actions.
@@ -20,7 +20,7 @@ const HOTKEYS = {
 	arrowright:
 		"a[rel='next'], li.chapter.next a, dd.series span:only-child a.next", // this selector is reused for prefetch hinting
 	b: "#bookmark-form input[type='submit'][name='commit']", // selector is reused for committing special bookmarks
-	s: "#new_subscription input[type='submit']:last-child", // this is brittle; we should only select when there's no "input[name='_method'][value='delete']" in this form
+	s: "#new_subscription input[type='submit']:last-child", // this is brittle; we should only select when there's no "input[name='_method'][value='delete']" in this form. needs :has to land in Firefox.
 	r: createRecBookmark,
 	h: createPrivateBookmark,
 };
@@ -29,6 +29,16 @@ const WORK_HOTKEYS = {
 	p: saveWorkToPocket,
 	l: warnDeprecation("l", "k", "#kudo_submit"),
 	k: "#kudo_submit",
+};
+
+const HOTKEYS_DISPLAY = {
+	[HOTKEYS.arrowleft]: "←",
+	[HOTKEYS.arrowright]: "→",
+	"li.bookmark a.bookmark_form_placement_open": "b",
+	[HOTKEYS.s]: "s",
+	"label[for='bookmark_rec']": "r",
+	"label[for='bookmark_private']": "p",
+	[WORK_HOTKEYS.k]: "k",
 };
 
 // section: functions for hotkeys
@@ -103,17 +113,19 @@ function warnDeprecation(oldkey, newkey, action) {
 
 // section: functions that execute automatically, as part of initialization
 
-const hotkeyHandler = (hotkey_map) => (event) => {
-	if (["INPUT", "TEXTAREA"].includes(event.target.tagName)) return; // don't interfere with input fields
+function hotkeyHandlerFactory(hotkey_map) {
+	return (event) => {
+		if (["INPUT", "TEXTAREA"].includes(event.target.tagName)) return; // don't interfere with input fields
 
-	let key = event.key.toLowerCase();
-	if (key in hotkey_map) {
-		let action = hotkey_map[key];
-		executeHotkeyAction(action);
-	} else {
-		console.debug(`unhandled key event: ${key}`);
-	}
-};
+		let key = event.key.toLowerCase();
+		if (key in hotkey_map) {
+			let action = hotkey_map[key];
+			executeHotkeyAction(action);
+		} else {
+			console.debug(`unhandled key event: ${key}`);
+		}
+	};
+}
 
 function getWorkData() {
 	let title = document.querySelector(".title.heading").innerText.trim();
@@ -183,9 +195,23 @@ function addPrefetchLinks() {
 	}
 }
 
+function markHotkeys(hotkey_display_map) {
+	for (const selector in hotkey_display_map) {
+		const element = document.querySelector(selector);
+		if (!element) continue;
+
+		const prop = element.nodeName == "INPUT" ? "value" : "innerHTML";
+
+		element[prop] += ` [${hotkey_display_map[selector]}]`;
+	}
+}
+
 function main() {
+	// mark hotkeys in the UI
+	markHotkeys(HOTKEYS_DISPLAY);
+
 	// add global hotkeys
-	document.addEventListener("keyup", hotkeyHandler(HOTKEYS));
+	document.addEventListener("keyup", hotkeyHandlerFactory(HOTKEYS));
 
 	// add prefetch links
 	addPrefetchLinks();
@@ -193,7 +219,7 @@ function main() {
 	// work processing
 	if (document.querySelector("#workskin")) {
 		// add work-specific hotkeys
-		document.addEventListener("keyup", hotkeyHandler(WORK_HOTKEYS));
+		document.addEventListener("keyup", hotkeyHandlerFactory(WORK_HOTKEYS));
 
 		// parse work data from the header
 		try {

@@ -52,7 +52,7 @@ function executeHotkeyAction(action) {
 			action();
 			break;
 		default:
-			console.error("unrecognized action type");
+			console.error(`unrecognized action type: ${typeof action}`, action);
 			break;
 	}
 }
@@ -128,7 +128,7 @@ function hotkeyHandlerFactory(hotkey_map) {
 			let action = hotkey_map[key];
 			executeHotkeyAction(action);
 		} else {
-			console.debug(`unhandled key event: ${key}`);
+			console.debug(`unhandled key event: ${key}`, hotkey_map);
 		}
 	};
 }

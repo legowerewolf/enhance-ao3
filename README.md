@@ -3,12 +3,15 @@
 ## Userscripts
 
 Install these by finding and opening the relevant file above, then clicking the
-"Raw" button. Your userscript extension should prompt you to install the script.
+"Raw" button in the bar just above the code. Your userscript extension should
+prompt you to install the script.
 
 Don't have a userscript extension? Try
 [Violentmonkey](https://violentmonkey.github.io/)!
 
 ### ao3-helpers (functional, active maintenance)
+
+[<button>Install</button>](https://github.com/legowerewolf/Userscripts/raw/master/ao3-helpers.user.js)
 
 Adds hotkeys to AO3 for:
 
@@ -29,6 +32,10 @@ Also includes:
 - [prefetch hinting][mdn-prefetch-faq] for next chapters/works/index pages. As
   of otwarchive v0.9.328.4 this has no effect, but it should make the reading
   experience smoother in the future.
+
+<small>_View the
+[related issues](https://github.com/legowerewolf/Userscripts/issues?q=is%3Aissue+is%3Aopen+label%3Aao3-helpers)
+for features and bugfixes in the works._</small>
 
 ### link-sanitizer (functional, in-development)
 

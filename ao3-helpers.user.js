@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name            AO3 Hotkeys
 // @namespace       legowerewolf.net
-// @version         0.5.2
+// @version         0.5.3
 // @updateURL       https://raw.githubusercontent.com/legowerewolf/Userscripts/master/ao3-helpers.user.js
 // @downloadURL     https://raw.githubusercontent.com/legowerewolf/Userscripts/master/ao3-helpers.user.js
 // @description     Adds hotkeys to AO3 for navigation and work- and series-related actions.
@@ -27,8 +27,8 @@ const HOTKEYS = {
 
 const WORK_HOTKEYS = {
 	p: saveWorkToPocket,
-	l: warnDeprecation("l", "k", "#kudo_submit"),
-	k: "#kudo_submit",
+	l: warnDeprecation("l", "k", superkudos),
+	k: superkudos,
 };
 
 const HOTKEYS_DISPLAY = {
@@ -38,7 +38,7 @@ const HOTKEYS_DISPLAY = {
 	[HOTKEYS.s]: "s",
 	"label[for='bookmark_rec']": "r",
 	"label[for='bookmark_private']": "p",
-	[WORK_HOTKEYS.k]: "k",
+	"#kudo_submit": "k",
 };
 
 // section: functions for hotkeys
@@ -109,6 +109,12 @@ function warnDeprecation(oldkey, newkey, action) {
 		);
 		executeHotkeyAction(action);
 	};
+}
+
+function superkudos() {
+	document.querySelector("#kudo_submit")?.click();
+	const commentField = document.querySelector("textarea.comment_form");
+	if (commentField) commentField.textContent += "❤️";
 }
 
 // section: functions that execute automatically, as part of initialization

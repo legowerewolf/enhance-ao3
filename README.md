@@ -2,16 +2,14 @@
 
 ## Userscripts
 
-Install these by finding and opening the relevant file above, then clicking the
-"Raw" button in the bar just above the code. Your userscript extension should
-prompt you to install the script.
-
 Don't have a userscript extension? Try
 [Violentmonkey](https://violentmonkey.github.io/)!
 
 ### ao3-helpers (functional, active maintenance)
 
-[<button>Install</button>](https://github.com/legowerewolf/Userscripts/raw/master/ao3-helpers.user.js)
+[Install](https://raw.githubusercontent.com/legowerewolf/Userscripts/master/ao3-helpers.user.js)
+|
+[File a bug report](https://github.com/legowerewolf/Userscripts/issues/new?labels=ao3-helpers)
 
 Adds hotkeys to AO3 for:
 
@@ -37,7 +35,7 @@ Also includes:
 [related issues](https://github.com/legowerewolf/Userscripts/issues?q=is%3Aissue+is%3Aopen+label%3Aao3-helpers)
 for features and bugfixes in the works._</small>
 
-### link-sanitizer (functional, in-development)
+### link-sanitizer (functional, not actively maintained)
 
 Removes tracking parameters from links from the Twitter on-page share button. I
 want to make it work with more sites (Tumblr, Twitter), but I haven't gotten

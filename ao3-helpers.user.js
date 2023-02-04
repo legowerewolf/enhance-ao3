@@ -26,7 +26,7 @@ const HOTKEYS = {
 		"a[rel='prev'], li.chapter.previous a, dd.series span:only-child a.previous",
 	arrowright:
 		"a[rel='next'], li.chapter.next a, dd.series span:only-child a.next", // this selector is reused for prefetch hinting
-	b: "#bookmark-form input[type='submit'][name='commit']", // selector is reused for committing special bookmarks
+	b: createBookmark,
 	s: "#new_subscription input[type='submit']:last-child", // this is brittle; we should only select when there's no "input[name='_method'][value='delete']" in this form. needs :has to land in Firefox.
 	r: createRecBookmark,
 	h: createPrivateBookmark,
@@ -34,6 +34,7 @@ const HOTKEYS = {
 
 const SELECTORS = {
 	commitBookmarkButton: "#bookmark-form input[type='submit'][name='commit']",
+	openBookmarkFormButton: "li.bookmark a.bookmark_form_placement_open",
 };
 
 const WORK_HOTKEYS = {
@@ -45,7 +46,7 @@ const WORK_HOTKEYS = {
 const HOTKEYS_DISPLAY = {
 	[HOTKEYS.arrowleft]: "←",
 	[HOTKEYS.arrowright]: "→",
-	"li.bookmark a.bookmark_form_placement_open": "b",
+	[SELECTORS.openBookmarkFormButton]: "b",
 	[HOTKEYS.s]: "s",
 	"label[for='bookmark_rec']": "r",
 	"label[for='bookmark_private']": "p",

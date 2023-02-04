@@ -2,7 +2,7 @@
 // @name            AO3 Hotkeys (branch:rebuild-engine)
 // @namespace       legowerewolf.net
 // @author          Lego (@legowerewolf)
-// @version         0.5.6
+// @version         0.5.7
 // @description     Adds hotkeys to AO3 for navigation and work- and series-related actions.
 // @homepageURL     https://github.com/legowerewolf/Userscripts
 // @supportURL      https://github.com/legowerewolf/Userscripts/issues/new?labels=ao3-helpers
@@ -19,43 +19,44 @@
 
 "use strict";
 
-// section: hotkey declarations
-
-const HOTKEYS = {
-	arrowleft:
-		"a[rel='prev'], li.chapter.previous a, dd.series span:only-child a.previous",
-	arrowright:
-		"a[rel='next'], li.chapter.next a, dd.series span:only-child a.next", // this selector is reused for prefetch hinting
-	b: createBookmark,
-	s: "#new_subscription input[type='submit']:last-child", // this is brittle; we should only select when there's no "input[name='_method'][value='delete']" in this form. needs :has to land in Firefox.
-	r: createRecBookmark,
-	h: createPrivateBookmark,
-};
+// section: functions for hotkeys
 
 const SELECTORS = {
 	commitBookmarkButton: "#bookmark-form input[type='submit'][name='commit']",
 	openBookmarkFormButton: "li.bookmark a.bookmark_form_placement_open",
 	kudosButton: "#kudo_submit",
 	commentField: "textarea.comment_form",
+	workNextChapterLink: "li.chapter.next a",
+	workPreviousChapterLink: "li.chapter.previous a",
+	seriesNextWorkLink: "dd.series span:only-child a.next",
+	seriesPreviousWorkLink: "dd.series span:only-child a.previous",
+	indexNextPageLink: "li.next a[rel='next']",
+	indexPreviousPageLink: "li.previous a[rel='prev']",
 };
 
-const WORK_HOTKEYS = {
-	p: saveWorkToPocket,
-	l: warnDeprecation("l", "k", superkudos),
-	k: superkudos,
-};
+const createBookmark = click(SELECTORS.commitBookmarkButton);
 
-const HOTKEYS_DISPLAY = {
-	[HOTKEYS.arrowleft]: "←",
-	[HOTKEYS.arrowright]: "→",
-	[SELECTORS.openBookmarkFormButton]: "b",
-	[HOTKEYS.s]: "s",
-	"label[for='bookmark_rec']": "r",
-	"label[for='bookmark_private']": "p",
-	"#kudo_submit": "k",
-};
+const createRecBookmark = doSequence(
+	setProperty("#bookmark_rec", "checked", true),
+	createBookmark
+);
 
-// section: functions for hotkeys
+const createPrivateBookmark = doSequence(
+	setProperty("#bookmark_private", "checked", true),
+	createBookmark
+);
+
+const goToNextPage = doFirst(
+	click(SELECTORS.indexNextPageLink),
+	click(SELECTORS.workNextChapterLink),
+	click(SELECTORS.seriesNextWorkLink)
+);
+
+const goToPreviousPage = doFirst(
+	click(SELECTORS.indexPreviousPageLink),
+	click(SELECTORS.workPreviousChapterLink),
+	click(SELECTORS.seriesPreviousWorkLink)
+);
 
 function executeHotkeyAction(action) {
 	switch (typeof action) {
@@ -100,18 +101,6 @@ function saveWorkToPocket() {
 	}, 5 * 1000);
 }
 
-const createBookmark = click(SELECTORS.commitBookmarkButton);
-
-const createRecBookmark = doSequence(
-	setProperty("#bookmark_rec", "checked", true),
-	createBookmark
-);
-
-const createPrivateBookmark = doSequence(
-	setProperty("#bookmark_private", "checked", true),
-	createBookmark
-);
-
 function warnDeprecation(oldkey, newkey, action) {
 	return () => {
 		alert(
@@ -127,6 +116,33 @@ const superkudos = doSequence(
 	click(SELECTORS.kudosButton),
 	appendText(SELECTORS.commentField, "❤️")
 );
+
+// section: hotkey declarations
+
+const HOTKEYS = {
+	arrowleft: doFirstSuccess,
+	arrowright: goToPreviousPage,
+	b: createBookmark,
+	s: "#new_subscription input[type='submit']:last-child", // this is brittle; we should only select when there's no "input[name='_method'][value='delete']" in this form. needs :has to land in Firefox.
+	r: createRecBookmark,
+	h: createPrivateBookmark,
+};
+
+const WORK_HOTKEYS = {
+	p: saveWorkToPocket,
+	l: warnDeprecation("l", "k", superkudos),
+	k: superkudos,
+};
+
+const HOTKEYS_DISPLAY = {
+	[HOTKEYS.arrowleft]: "←",
+	[HOTKEYS.arrowright]: "→",
+	[SELECTORS.openBookmarkFormButton]: "b",
+	[HOTKEYS.s]: "s",
+	"label[for='bookmark_rec']": "r",
+	"label[for='bookmark_private']": "p",
+	"#kudo_submit": "k",
+};
 
 // section: functions that execute automatically, as part of initialization
 
@@ -199,7 +215,13 @@ function getWorkData() {
 }
 
 function addPrefetchLinks() {
-	let prefetchableLinks = document.querySelectorAll(HOTKEYS.arrowright);
+	let prefetchableLinks = document.querySelectorAll(
+		[
+			SELECTORS.workNextChapterLink,
+			SELECTORS.seriesNextWorkLink,
+			SELECTORS.indexNextPageLink,
+		].join(", ")
+	);
 
 	for (let link of prefetchableLinks) {
 		let el = Object.assign(document.createElement("link"), {

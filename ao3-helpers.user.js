@@ -35,6 +35,8 @@ const HOTKEYS = {
 const SELECTORS = {
 	commitBookmarkButton: "#bookmark-form input[type='submit'][name='commit']",
 	openBookmarkFormButton: "li.bookmark a.bookmark_form_placement_open",
+	kudosButton: "#kudo_submit",
+	commentField: "textarea.comment_form",
 };
 
 const WORK_HOTKEYS = {
@@ -121,11 +123,10 @@ function warnDeprecation(oldkey, newkey, action) {
 	};
 }
 
-function superkudos() {
-	document.querySelector("#kudo_submit")?.click();
-	const commentField = document.querySelector("textarea.comment_form");
-	if (commentField) commentField.value += "❤️";
-}
+const superkudos = doSequence(
+	click(SELECTORS.kudosButton),
+	appendText(SELECTORS.commentField, "❤️")
+);
 
 // section: functions that execute automatically, as part of initialization
 

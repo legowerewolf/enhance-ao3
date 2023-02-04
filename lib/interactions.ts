@@ -15,6 +15,19 @@ const setProperty = (selector: string, attribute: string, value: any) => () => {
 	element[attribute] = value;
 };
 
+const appendText = (selector: string, text: string) => () => {
+	let element = getElement(selector);
+	if (element instanceof HTMLInputElement) {
+		element.value += text;
+	} else if (element instanceof HTMLTextAreaElement) {
+		element.value += text;
+	} else {
+		throw new Error(
+			`selected element is not an input or textarea: "${selector}": ${element}`
+		);
+	}
+};
+
 const doSequence =
 	(...actions: CallableFunction[]) =>
 	() => {

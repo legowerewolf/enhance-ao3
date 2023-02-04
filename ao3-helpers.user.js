@@ -4,7 +4,7 @@
 // @author          Lego (@legowerewolf)
 // @version         0.5.5
 // @description     Adds hotkeys to AO3 for navigation and work- and series-related actions.
-// @homepage        https://github.com/legowerewolf/Userscripts
+// @homepageURL     https://github.com/legowerewolf/Userscripts
 
 // @match           https://archiveofourown.org/*
 

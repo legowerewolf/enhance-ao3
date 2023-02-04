@@ -46,3 +46,14 @@ const doSequence =
 			}
 		}
 	};
+
+const doFirst =
+	(...actions: CallableFunction[]) =>
+	() => {
+		for (let action of actions) {
+			try {
+				action();
+				return;
+			} catch (e) {}
+		}
+	};

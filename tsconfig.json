@@ -2,6 +2,7 @@
 	"include": ["./**/*"],
 	"compilerOptions": {
 		"lib": ["ESNext", "dom"],
-		"target": "esnext"
+		"target": "esnext",
+		"noImplicitAny": true
 	}
 }

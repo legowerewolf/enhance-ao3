@@ -28,6 +28,7 @@ const SELECTORS = {
     indexPreviousPageLink: "li.previous a[rel='prev']",
     subscribeButton: "#new_subscription input[type='submit']",
     hiddenSubscribeDeleteInput: "#new_subscription input[name='_method'][value='delete']",
+    chaptersStatsSpan: ".stats dd.chapters",
 };
 // section: hotkey action functions
 const createBookmark = click(SELECTORS.commitBookmarkButton);
@@ -64,7 +65,7 @@ const saveWorkToPocket = () => {
 // section: hotkey action helpers
 const warnDeprecation = (oldkey, newkey, action) => () => {
     alert(`The hotkey "${oldkey}" is deprecated. ${newkey ? `Use "${newkey}" instead.` : ""}`);
-    executeHotkeyAction(action);
+    action();
 };
 // section: hotkey declarations
 const HOTKEYS = {
@@ -105,11 +106,17 @@ function getWorkData() {
     let title = getElement(".title.heading").innerText.trim();
     // get work ID
     let id = -1;
-    let loc = (getElement("li.share a") ?? window.location).href.match(/works\/(\d+)/);
-    if (1 in loc)
-        id = parseInt(loc[1]);
-    else
-        console.error("Could not find work ID.");
+    try {
+        let shareButton = getElement("li.share a");
+        let matches = shareButton.href.match(/works\/(\d+)/);
+        if (1 in matches)
+            id = parseInt(matches[1]);
+        else
+            throw "No work ID found in share button URL.";
+    }
+    catch (e) {
+        console.error("Could not find work ID.", e);
+    }
     // get author
     let author;
     try {
@@ -122,26 +129,27 @@ function getWorkData() {
     catch {
         author = {
             name: getElement("h2.title + h3.byline").innerText.trim(),
-            link: null,
+            link: undefined,
         };
     }
-    let [chapters_complete, chapters_total] = document
-        .querySelector(".stats .chapters + .chapters")
+    // get chapter info
+    let [chapters_complete, chapters_total] = getElement(SELECTORS.chaptersStatsSpan)
         .innerText.split("/")
         .map((s) => parseInt(s) || -1);
+    // get tag categories
     let tag_categories = new Set();
-    for (let node of document.querySelectorAll(".work.meta.group .tags")) {
+    let tagCategoryElements = getElements(".work.meta.group dt.tags");
+    for (let node of tagCategoryElements) {
         node.classList.forEach((c) => tag_categories.add(c));
     }
     tag_categories.delete("tags");
-    let tags = {};
+    // get tags
+    let tags;
     for (const category of tag_categories) {
-        tags[category] = Array.from(document.querySelectorAll(`.${category}.tags .tag`)).map((tag) => {
-            return {
-                name: tag.innerText,
-                link: tag.href,
-            };
-        });
+        tags.set(category, getElements(`dd.${category}.tags a.tag`).map((tag) => ({
+            name: tag.innerText,
+            link: tag.href,
+        })));
     }
     return {
         title,
@@ -156,11 +164,11 @@ function getWorkData() {
     };
 }
 function addPrefetchLinks() {
-    let prefetchableLinks = Array.from(document.querySelectorAll([
+    let prefetchableLinks = getElements([
         SELECTORS.workNextChapterLink,
         SELECTORS.seriesNextWorkLink,
         SELECTORS.indexNextPageLink,
-    ].join(", ")));
+    ].join(", "));
     for (let link of prefetchableLinks) {
         let el = Object.assign(document.createElement("link"), {
             rel: "next prefetch",
@@ -172,7 +180,7 @@ function addPrefetchLinks() {
 }
 function markHotkeys(hotkey_display_map) {
     for (const selector in hotkey_display_map) {
-        const element = document.querySelector(selector);
+        const element = getElement(selector);
         if (!element)
             continue;
         const prop = element.nodeName == "INPUT" ? "value" : "innerHTML";

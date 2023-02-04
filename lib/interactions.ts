@@ -1,7 +1,7 @@
 function getElement(selector: string): HTMLElement {
 	let element: HTMLElement = document.querySelector(selector);
 	if (element === null)
-		throw new Error(`no element found for selector: ${selector}`);
+		throw new Error(`no element found for selector: "${selector}"`);
 	return element;
 }
 
@@ -14,6 +14,12 @@ const setProperty = (selector: string, attribute: string, value: any) => () => {
 	let element = getElement(selector);
 	element[attribute] = value;
 };
+
+const setAttribute =
+	(selector: string, attribute: string, value: any) => () => {
+		let element = getElement(selector);
+		element.setAttribute(attribute, value);
+	};
 
 const appendText = (selector: string, text: string) => () => {
 	let element = getElement(selector);

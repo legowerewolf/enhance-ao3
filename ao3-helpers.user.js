@@ -2,14 +2,14 @@
 // @name            AO3 Hotkeys
 // @namespace       legowerewolf.net
 // @author          Lego (@legowerewolf)
-// @version         0.5.5
+// @version         0.5.6
 // @description     Adds hotkeys to AO3 for navigation and work- and series-related actions.
 // @homepageURL     https://github.com/legowerewolf/Userscripts
 
 // @match           https://archiveofourown.org/*
 
-// @updateURL       https://raw.githubusercontent.com/legowerewolf/Userscripts/master/ao3-helpers.user.js
-// @downloadURL     https://raw.githubusercontent.com/legowerewolf/Userscripts/master/ao3-helpers.user.js
+// @updateURL       https://raw.githubusercontent.com/legowerewolf/Userscripts/main/ao3-helpers.user.js
+// @downloadURL     https://raw.githubusercontent.com/legowerewolf/Userscripts/main/ao3-helpers.user.js
 // @supportURL      https://github.com/legowerewolf/Userscripts/issues/new?labels=ao3-helpers
 
 // @grant           none

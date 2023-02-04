@@ -29,6 +29,8 @@ const SELECTORS = {
     subscribeButton: "#new_subscription input[type='submit']",
     hiddenSubscribeDeleteInput: "#new_subscription input[name='_method'][value='delete']",
     chaptersStatsSpan: ".stats dd.chapters",
+    bookmarkRecCheckboxLabel: "label[for='bookmark_rec']",
+    bookmarkPrivateCheckboxLabel: "label[for='bookmark_private']",
 };
 // section: hotkey action functions
 const createBookmark = click(SELECTORS.commitBookmarkButton);
@@ -68,39 +70,26 @@ const warnDeprecation = (oldkey, newkey, action) => () => {
     action();
 };
 // section: hotkey declarations
-const HOTKEYS = {
-    arrowleft: goToPreviousPage,
-    arrowright: goToNextPage,
-    b: createBookmark,
-    s: subscribe,
-    r: createRecBookmark,
-    h: createPrivateBookmark,
-};
-const WORK_HOTKEYS = {
-    p: saveWorkToPocket,
-    l: warnDeprecation("l", "k", superkudos),
-    k: superkudos,
-};
+const HOTKEYS = [
+    [["arrowleft"], goToPreviousPage],
+    [["arrowright"], goToNextPage],
+    [["b"], createBookmark],
+    [["s"], subscribe],
+    [["r"], createRecBookmark],
+    [["h"], createPrivateBookmark],
+];
+const WORK_HOTKEYS = [
+    [["p"], saveWorkToPocket],
+    [["k"], superkudos],
+    [["l"], warnDeprecation("l", "k", superkudos)],
+];
 const HOTKEYS_DISPLAY = {
     [SELECTORS.openBookmarkFormButton]: "b",
     [SELECTORS.kudosButton]: "k",
-    "label[for='bookmark_rec']": "r",
-    "label[for='bookmark_private']": "p",
+    [SELECTORS.bookmarkRecCheckboxLabel]: "r",
+    [SELECTORS.bookmarkPrivateCheckboxLabel]: "p",
 };
 // section: functions that execute automatically, as part of initialization
-function hotkeyHandlerFactory(hotkey_map) {
-    return (event) => {
-        if (["INPUT", "TEXTAREA"].includes(event.target.tagName))
-            return; // don't interfere with input fields
-        let key = event.key.toLowerCase();
-        if (key in hotkey_map) {
-            hotkey_map[key]();
-        }
-        else {
-            console.debug(`unhandled key event: ${key}`, hotkey_map);
-        }
-    };
-}
 function getWorkData() {
     // get title
     let title = getElement(".title.heading").innerText.trim();
@@ -190,14 +179,14 @@ function markHotkeys(hotkey_display_map) {
 function main() {
     // mark hotkeys in the UI
     markHotkeys(HOTKEYS_DISPLAY);
-    // add global hotkeys
-    document.addEventListener("keyup", hotkeyHandlerFactory(HOTKEYS));
     // add prefetch links
     addPrefetchLinks();
+    const engine = new HotkeyEngine();
+    HOTKEYS.forEach(([keys, handler]) => engine.registerAction(keys, handler));
     // work processing
     if (document.querySelector("#workskin")) {
         // add work-specific hotkeys
-        document.addEventListener("keyup", hotkeyHandlerFactory(WORK_HOTKEYS));
+        WORK_HOTKEYS.forEach(([keys, handler]) => engine.registerAction(keys, handler));
         // parse work data from the header
         try {
             document.AO3_work_data = getWorkData();
@@ -207,6 +196,7 @@ function main() {
             console.error("Could not get work data.", error);
         }
     }
+    engine.attach(document.body);
 }
 // wait for the page to finish loading before running the script
 if (document.readyState === "loading") {

@@ -20,6 +20,7 @@
 "use strict";
 
 type NamedLink = { name: string; link: string };
+type HotkeyConfig = [string[] | Set<string>, () => void];
 
 // section: CSS selectors for the elements we want to interact with
 
@@ -38,6 +39,9 @@ const SELECTORS = {
 	hiddenSubscribeDeleteInput:
 		"#new_subscription input[name='_method'][value='delete']",
 	chaptersStatsSpan: ".stats dd.chapters",
+
+	bookmarkRecCheckboxLabel: "label[for='bookmark_rec']",
+	bookmarkPrivateCheckboxLabel: "label[for='bookmark_private']",
 };
 
 // section: hotkey action functions
@@ -45,12 +49,12 @@ const SELECTORS = {
 const createBookmark = click(SELECTORS.commitBookmarkButton);
 
 const createRecBookmark = doSequence(
-	setProperty("#bookmark_rec", "checked", true),
+	setProperty<HTMLInputElement>("#bookmark_rec", "checked", true),
 	createBookmark
 );
 
 const createPrivateBookmark = doSequence(
-	setProperty("#bookmark_private", "checked", true),
+	setProperty<HTMLInputElement>("#bookmark_private", "checked", true),
 	createBookmark
 );
 
@@ -122,43 +126,29 @@ const warnDeprecation =
 
 // section: hotkey declarations
 
-const HOTKEYS = {
-	arrowleft: goToPreviousPage,
-	arrowright: goToNextPage,
-	b: createBookmark,
-	s: subscribe,
-	r: createRecBookmark,
-	h: createPrivateBookmark,
-};
+const HOTKEYS: HotkeyConfig[] = [
+	[["arrowleft"], goToPreviousPage],
+	[["arrowright"], goToNextPage],
+	[["b"], createBookmark],
+	[["s"], subscribe],
+	[["r"], createRecBookmark],
+	[["h"], createPrivateBookmark],
+];
 
-const WORK_HOTKEYS = {
-	p: saveWorkToPocket,
-	l: warnDeprecation("l", "k", superkudos),
-	k: superkudos,
-};
+const WORK_HOTKEYS: HotkeyConfig[] = [
+	[["p"], saveWorkToPocket],
+	[["k"], superkudos],
+	[["l"], warnDeprecation("l", "k", superkudos)],
+];
 
 const HOTKEYS_DISPLAY = {
 	[SELECTORS.openBookmarkFormButton]: "b",
 	[SELECTORS.kudosButton]: "k",
-
-	"label[for='bookmark_rec']": "r",
-	"label[for='bookmark_private']": "p",
+	[SELECTORS.bookmarkRecCheckboxLabel]: "r",
+	[SELECTORS.bookmarkPrivateCheckboxLabel]: "p",
 };
 
 // section: functions that execute automatically, as part of initialization
-
-function hotkeyHandlerFactory(hotkey_map) {
-	return (event: KeyboardEvent) => {
-		if (["INPUT", "TEXTAREA"].includes(event.target.tagName)) return; // don't interfere with input fields
-
-		let key = event.key.toLowerCase();
-		if (key in hotkey_map) {
-			hotkey_map[key]();
-		} else {
-			console.debug(`unhandled key event: ${key}`, hotkey_map);
-		}
-	};
-}
 
 function getWorkData() {
 	// get title
@@ -252,9 +242,11 @@ function addPrefetchLinks() {
 	}
 }
 
-function markHotkeys(hotkey_display_map) {
+function markHotkeys(hotkey_display_map: Record<string, string>) {
 	for (const selector in hotkey_display_map) {
-		const element = getElement(selector);
+		const element = getElement<HTMLInputElement | HTMLTextAreaElement>(
+			selector
+		);
 		if (!element) continue;
 
 		const prop = element.nodeName == "INPUT" ? "value" : "innerHTML";
@@ -267,16 +259,18 @@ function main() {
 	// mark hotkeys in the UI
 	markHotkeys(HOTKEYS_DISPLAY);
 
-	// add global hotkeys
-	document.addEventListener("keyup", hotkeyHandlerFactory(HOTKEYS));
-
 	// add prefetch links
 	addPrefetchLinks();
+
+	const engine = new HotkeyEngine();
+	HOTKEYS.forEach(([keys, handler]) => engine.registerAction(keys, handler));
 
 	// work processing
 	if (document.querySelector("#workskin")) {
 		// add work-specific hotkeys
-		document.addEventListener("keyup", hotkeyHandlerFactory(WORK_HOTKEYS));
+		WORK_HOTKEYS.forEach(([keys, handler]) =>
+			engine.registerAction(keys, handler)
+		);
 
 		// parse work data from the header
 		try {
@@ -286,6 +280,8 @@ function main() {
 			console.error("Could not get work data.", error);
 		}
 	}
+
+	engine.attach(document.body);
 }
 
 // wait for the page to finish loading before running the script

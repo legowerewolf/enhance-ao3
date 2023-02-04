@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name            AO3 Hotkeys
+// @name            AO3 Hotkeys (branch:rebuild-engine)
 // @namespace       legowerewolf.net
 // @author          Lego (@legowerewolf)
 // @version         0.5.6
@@ -8,9 +8,12 @@
 
 // @match           https://archiveofourown.org/*
 
-// @updateURL       https://raw.githubusercontent.com/legowerewolf/Userscripts/main/ao3-helpers.user.js
-// @downloadURL     https://raw.githubusercontent.com/legowerewolf/Userscripts/main/ao3-helpers.user.js
+// @updateURL       https://raw.githubusercontent.com/legowerewolf/Userscripts/rebuild-engine/ao3-helpers.user.js
+// @downloadURL     https://raw.githubusercontent.com/legowerewolf/Userscripts/rebuild-engine/ao3-helpers.user.js
 // @supportURL      https://github.com/legowerewolf/Userscripts/issues/new?labels=ao3-helpers
+
+// @require         https://raw.githubusercontent.com/legowerewolf/Userscripts/rebuild-engine/lib/HotkeyEngine.js
+// @require         https://raw.githubusercontent.com/legowerewolf/Userscripts/rebuild-engine/lib/interactions.js
 
 // @grant           none
 // ==/UserScript==
@@ -28,6 +31,10 @@ const HOTKEYS = {
 	s: "#new_subscription input[type='submit']:last-child", // this is brittle; we should only select when there's no "input[name='_method'][value='delete']" in this form. needs :has to land in Firefox.
 	r: createRecBookmark,
 	h: createPrivateBookmark,
+};
+
+const SELECTORS = {
+	commitBookmarkButton: "#bookmark-form input[type='submit'][name='commit']",
 };
 
 const WORK_HOTKEYS = {
@@ -91,19 +98,17 @@ function saveWorkToPocket() {
 	}, 5 * 1000);
 }
 
-function createSpecialBookmark(checkboxSelector) {
-	let checkbox = document.querySelector(checkboxSelector);
-	if (checkbox) checkbox.checked = true;
-	document.querySelector(HOTKEYS.b)?.click();
-}
+const createBookmark = click(SELECTORS.commitBookmarkButton);
 
-function createRecBookmark() {
-	createSpecialBookmark("#bookmark_rec");
-}
+const createRecBookmark = doSequence(
+	setProperty("#bookmark_rec", "checked", true),
+	createBookmark
+);
 
-function createPrivateBookmark() {
-	createSpecialBookmark("#bookmark_private");
-}
+const createPrivateBookmark = doSequence(
+	setProperty("#bookmark_private", "checked", true),
+	createBookmark
+);
 
 function warnDeprecation(oldkey, newkey, action) {
 	return () => {

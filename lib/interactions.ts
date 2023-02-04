@@ -2,11 +2,22 @@
  * @param selector a CSS selector
  * @returns the first element matching the selector, or throws an error if no element matches
  */
-function getElement(selector: string): HTMLElement {
-	let element: HTMLElement = document.querySelector(selector);
+function getElement<T extends HTMLElement>(selector: string): T {
+	let element: T = document.querySelector(selector);
 	if (element === null)
 		throw new Error(`no element found for selector: "${selector}"`);
 	return element;
+}
+
+/**
+ * @param selector a CSS selector
+ * @returns an array of all elements matching the selector, or throws an error if no element matches
+ */
+function getElements<T extends HTMLElement>(selector: string): Array<T> {
+	let elements: NodeListOf<T> = document.querySelectorAll(selector);
+	if (elements.length === 0)
+		throw new Error(`no elements found for selector: "${selector}"`);
+	return Array.from(elements);
 }
 
 /**
@@ -25,10 +36,12 @@ const click = (selector: string) => () => {
  * @param value the value to set the property to
  * @returns nothing, but propogates any errors thrown by getElement
  */
-const setProperty = (selector: string, property: string, value: any) => () => {
-	let element = getElement(selector);
-	element[property] = value;
-};
+const setProperty =
+	<T extends HTMLElement>(selector: string, property: keyof T, value: any) =>
+	() => {
+		let element = getElement<T>(selector);
+		element[property] = value;
+	};
 
 /**
  * Sets the value of an element's attribute in the DOM.
@@ -38,7 +51,7 @@ const setProperty = (selector: string, property: string, value: any) => () => {
  * @returns nothing, but propogates any errors thrown by getElement
  */
 const setAttribute =
-	(selector: string, attribute: string, value: any) => () => {
+	(selector: string, attribute: string, value: string) => () => {
 		let element = getElement(selector);
 		element.setAttribute(attribute, value);
 	};

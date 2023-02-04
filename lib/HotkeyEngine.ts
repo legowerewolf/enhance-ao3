@@ -2,6 +2,7 @@ class HotkeyEngine extends EventTarget {
 	/** Stores KeyboardEvent.key strings */
 	private currentKeys: Set<string>;
 	private timeout: number | undefined;
+	private registeredActions: Map<string, () => void>;
 
 	static normalize(keyCombination: Set<string> | Array<string>) {
 		if (keyCombination instanceof Set)
@@ -17,6 +18,7 @@ class HotkeyEngine extends EventTarget {
 		super();
 
 		this.currentKeys = new Set();
+		this.registeredActions = new Map();
 	}
 
 	onKeydown(e: KeyboardEvent) {
@@ -41,13 +43,16 @@ class HotkeyEngine extends EventTarget {
 			(isInputElement &&
 				(this.currentKeys.has("Control") || this.currentKeys.has("Alt")))
 		) {
+			const normalizedKeys = HotkeyEngine.normalize(this.currentKeys);
 			this.dispatchEvent(
 				new CustomEvent("hotkey", {
 					detail: {
-						value: HotkeyEngine.normalize(this.currentKeys),
+						value: normalizedKeys,
 					},
 				})
 			);
+
+			this.registeredActions.get(normalizedKeys)?.();
 		}
 
 		this.currentKeys.clear();
@@ -78,5 +83,22 @@ class HotkeyEngine extends EventTarget {
 
 		element.addEventListener("keydown", boundKeydown);
 		element.addEventListener("keyup", boundKeyup);
+	}
+
+	registerAction(
+		keyCombination: Set<string> | Array<string>,
+		action: () => void
+	) {
+		const normalizedKeys = HotkeyEngine.normalize(keyCombination);
+		this.registeredActions.set(normalizedKeys, action);
+	}
+
+	unregisterAction(keyCombination: Set<string> | Array<string>) {
+		const normalizedKeys = HotkeyEngine.normalize(keyCombination);
+		this.registeredActions.delete(normalizedKeys);
+	}
+
+	clearRegisteredActions() {
+		this.registeredActions.clear();
 	}
 }

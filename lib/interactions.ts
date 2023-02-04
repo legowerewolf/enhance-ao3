@@ -1,3 +1,7 @@
+/**
+ * @param selector a CSS selector
+ * @returns the first element matching the selector, or throws an error if no element matches
+ */
 function getElement(selector: string): HTMLElement {
 	let element: HTMLElement = document.querySelector(selector);
 	if (element === null)
@@ -5,22 +9,45 @@ function getElement(selector: string): HTMLElement {
 	return element;
 }
 
+/**
+ * @param selector a CSS selector
+ * @returns nothing, but propogates any errors thrown by getElement
+ */
 const click = (selector: string) => () => {
 	let element = getElement(selector);
 	element.click();
 };
 
-const setProperty = (selector: string, attribute: string, value: any) => () => {
+/**
+ * Sets the value of a property of an element object.
+ * @param selector a CSS selector
+ * @param property a property of the selected element
+ * @param value the value to set the property to
+ * @returns nothing, but propogates any errors thrown by getElement
+ */
+const setProperty = (selector: string, property: string, value: any) => () => {
 	let element = getElement(selector);
-	element[attribute] = value;
+	element[property] = value;
 };
 
+/**
+ * Sets the value of an element's attribute in the DOM.
+ * @param selector a CSS selector
+ * @param attribute an attribute of the selected element
+ * @param value the value to set the attribute to
+ * @returns nothing, but propogates any errors thrown by getElement
+ */
 const setAttribute =
 	(selector: string, attribute: string, value: any) => () => {
 		let element = getElement(selector);
 		element.setAttribute(attribute, value);
 	};
 
+/**
+ * @param selector a CSS selector
+ * @param text content to append to the selected element
+ * @returns nothing, but propogates any errors thrown by getElement, and throws an error if the selected element is not an input or textarea
+ */
 const appendText = (selector: string, text: string) => () => {
 	let element = getElement(selector);
 	if (element instanceof HTMLInputElement) {
@@ -34,6 +61,10 @@ const appendText = (selector: string, text: string) => () => {
 	}
 };
 
+/**
+ * @param actions a list of functions to call in order
+ * @returns a function that calls each function in the list in order, stopping if any function throws an error. That function returns true if all actions succeeded, false if any failed.
+ */
 const doSequence =
 	(...actions: CallableFunction[]) =>
 	() => {
@@ -42,18 +73,23 @@ const doSequence =
 				action();
 			} catch (e) {
 				console.error(e);
-				break;
+				return false;
 			}
 		}
+		return true;
 	};
 
+/**
+ * @param actions a list of functions to call in order, stopping at the first one that does not throw an error
+ * @returns the return value of the function that did not throw an error, or undefined if all functions threw errors
+ */
 const doFirst =
 	(...actions: CallableFunction[]) =>
 	() => {
 		for (let action of actions) {
 			try {
-				action();
-				return;
+				return action();
 			} catch (e) {}
 		}
+		return undefined;
 	};

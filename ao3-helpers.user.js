@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name            AO3 Hotkeys
 // @namespace       legowerewolf.net
-// @version         0.5.3
+// @version         0.5.4
 // @updateURL       https://raw.githubusercontent.com/legowerewolf/Userscripts/master/ao3-helpers.user.js
 // @downloadURL     https://raw.githubusercontent.com/legowerewolf/Userscripts/master/ao3-helpers.user.js
 // @description     Adds hotkeys to AO3 for navigation and work- and series-related actions.
@@ -114,7 +114,7 @@ function warnDeprecation(oldkey, newkey, action) {
 function superkudos() {
 	document.querySelector("#kudo_submit")?.click();
 	const commentField = document.querySelector("textarea.comment_form");
-	if (commentField) commentField.textContent += "❤️";
+	if (commentField) commentField.value += "❤️";
 }
 
 // section: functions that execute automatically, as part of initialization

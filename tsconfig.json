@@ -1,0 +1,7 @@
+{
+	"include": ["./**/*"],
+	"compilerOptions": {
+		"lib": ["ESNext", "dom"],
+		"target": "esnext"
+	}
+}

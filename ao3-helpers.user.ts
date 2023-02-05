@@ -133,8 +133,8 @@ const HOTKEYS: HotkeyConfig[] = [
 	[["s"], subscribe],
 	[["b", "r"], createRecBookmark],
 	[["b", "p"], createPrivateBookmark],
-	[["r"], warnDeprecation("r", "b+r", createRecBookmark)],
-	[["h"], warnDeprecation("h", "b+p", createPrivateBookmark)],
+	[["r"], warnDeprecation("r", "b + r", createRecBookmark)],
+	[["h"], warnDeprecation("h", "b + p", createPrivateBookmark)],
 ];
 
 const WORK_HOTKEYS: HotkeyConfig[] = [
@@ -144,10 +144,21 @@ const WORK_HOTKEYS: HotkeyConfig[] = [
 ];
 
 const HOTKEYS_DISPLAY = {
+	[[
+		SELECTORS.indexPreviousPageLink,
+		SELECTORS.workPreviousChapterLink,
+		SELECTORS.seriesPreviousWorkLink,
+	].join(", ")]: "←",
+	[[
+		SELECTORS.indexNextPageLink,
+		SELECTORS.workNextChapterLink,
+		SELECTORS.seriesNextWorkLink,
+	].join(", ")]: "→",
 	[SELECTORS.openBookmarkFormButton]: "b",
+	[SELECTORS.subscribeButton]: "s",
+	[SELECTORS.bookmarkRecCheckboxLabel]: "b + r",
+	[SELECTORS.bookmarkPrivateCheckboxLabel]: "b + p",
 	[SELECTORS.kudosButton]: "k",
-	[SELECTORS.bookmarkRecCheckboxLabel]: "r",
-	[SELECTORS.bookmarkPrivateCheckboxLabel]: "p",
 };
 
 // section: functions that execute automatically, as part of initialization

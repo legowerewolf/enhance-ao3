@@ -153,27 +153,31 @@ function getWorkData() {
     };
 }
 function addPrefetchLinks() {
-    let prefetchableLinks = getElements([
-        SELECTORS.workNextChapterLink,
-        SELECTORS.seriesNextWorkLink,
-        SELECTORS.indexNextPageLink,
-    ].join(", "));
-    for (let link of prefetchableLinks) {
-        let el = Object.assign(document.createElement("link"), {
-            rel: "next prefetch",
-            type: "text/html",
-            href: link.href.split("#")[0],
-        });
-        document.head.appendChild(el);
+    try {
+        let prefetchableLinks = getElements([
+            SELECTORS.workNextChapterLink,
+            SELECTORS.seriesNextWorkLink,
+            SELECTORS.indexNextPageLink,
+        ].join(", "));
+        for (let link of prefetchableLinks) {
+            let el = Object.assign(document.createElement("link"), {
+                rel: "next prefetch",
+                type: "text/html",
+                href: link.href.split("#")[0],
+            });
+            document.head.appendChild(el);
+        }
     }
+    catch { }
 }
 function markHotkeys(hotkey_display_map) {
     for (const selector in hotkey_display_map) {
-        const element = getElement(selector);
-        if (!element)
-            continue;
-        const prop = element.nodeName == "INPUT" ? "value" : "innerHTML";
-        element[prop] += ` [${hotkey_display_map[selector]}]`;
+        try {
+            const element = getElement(selector);
+            const prop = element.nodeName == "INPUT" ? "value" : "innerHTML";
+            element[prop] += ` [${hotkey_display_map[selector]}]`;
+        }
+        catch { }
     }
 }
 function main() {

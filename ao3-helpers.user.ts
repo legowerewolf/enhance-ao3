@@ -196,16 +196,15 @@ function getWorkData() {
 	tag_categories.delete("tags");
 
 	// get tags
-	let tags: Map<String, NamedLink[]>;
+	let tags: Record<string, NamedLink[]> = {};
 	for (const category of tag_categories) {
-		tags.set(
-			category,
-			getElements<HTMLAnchorElement>(`dd.${category}.tags a.tag`).map(
-				(tag): NamedLink => ({
-					name: tag.innerText,
-					link: tag.href,
-				})
-			)
+		tags[category] = getElements<HTMLAnchorElement>(
+			`dd.${category}.tags a.tag`
+		).map(
+			(tag): NamedLink => ({
+				name: tag.innerText,
+				link: tag.href,
+			})
 		);
 	}
 

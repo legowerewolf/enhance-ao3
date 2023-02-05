@@ -133,12 +133,12 @@ function getWorkData() {
     }
     tag_categories.delete("tags");
     // get tags
-    let tags;
+    let tags = {};
     for (const category of tag_categories) {
-        tags.set(category, getElements(`dd.${category}.tags a.tag`).map((tag) => ({
+        tags[category] = getElements(`dd.${category}.tags a.tag`).map((tag) => ({
             name: tag.innerText,
             link: tag.href,
-        })));
+        }));
     }
     return {
         title,

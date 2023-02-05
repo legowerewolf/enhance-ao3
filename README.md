@@ -7,7 +7,7 @@ Don't have a userscript extension? Try
 
 ### ao3-helpers (functional, active maintenance)
 
-[Install](https://raw.githubusercontent.com/legowerewolf/Userscripts/main/ao3-helpers.user.js)
+[Install](https://raw.githubusercontent.com/legowerewolf/Userscripts/rebuild-engine/ao3-helpers.user.js)
 |
 [File a bug report](https://github.com/legowerewolf/Userscripts/issues/new?labels=ao3-helpers)
 

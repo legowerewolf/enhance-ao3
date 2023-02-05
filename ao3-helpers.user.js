@@ -4,7 +4,7 @@
 // @author          Lego (@legowerewolf)
 // @version         0.5.7
 // @description     Adds hotkeys to AO3 for navigation and work- and series-related actions.
-// @homepageURL     https://github.com/legowerewolf/Userscripts
+// @homepageURL     https://github.com/legowerewolf/Userscripts/tree/rebuild-engine
 // @supportURL      https://github.com/legowerewolf/Userscripts/issues/new?labels=ao3-helpers
 // @updateURL       https://raw.githubusercontent.com/legowerewolf/Userscripts/rebuild-engine/ao3-helpers.user.js
 // @downloadURL     https://raw.githubusercontent.com/legowerewolf/Userscripts/rebuild-engine/ao3-helpers.user.js

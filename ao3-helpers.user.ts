@@ -1,17 +1,17 @@
 // ==UserScript==
-// @name            AO3 Hotkeys (branch:rebuild-engine)
+// @name            AO3 Hotkeys (branch:beta)
 // @namespace       legowerewolf.net
 // @author          Lego (@legowerewolf)
 // @version         0.5.7
 // @description     Adds hotkeys to AO3 for navigation and work- and series-related actions.
-// @homepageURL     https://github.com/legowerewolf/Userscripts/tree/rebuild-engine
+// @homepageURL     https://github.com/legowerewolf/Userscripts/tree/beta
 // @supportURL      https://github.com/legowerewolf/Userscripts/issues/new?labels=ao3-helpers
 
-// @updateURL       https://raw.githubusercontent.com/legowerewolf/Userscripts/rebuild-engine/ao3-helpers.user.js
-// @downloadURL     https://raw.githubusercontent.com/legowerewolf/Userscripts/rebuild-engine/ao3-helpers.user.js
+// @updateURL       https://raw.githubusercontent.com/legowerewolf/Userscripts/beta/ao3-helpers.user.js
+// @downloadURL     https://raw.githubusercontent.com/legowerewolf/Userscripts/beta/ao3-helpers.user.js
 
-// @require         https://raw.githubusercontent.com/legowerewolf/Userscripts/rebuild-engine/lib/HotkeyEngine.js
-// @require         https://raw.githubusercontent.com/legowerewolf/Userscripts/rebuild-engine/lib/interactions.js
+// @require         https://raw.githubusercontent.com/legowerewolf/Userscripts/beta/lib/HotkeyEngine.js
+// @require         https://raw.githubusercontent.com/legowerewolf/Userscripts/beta/lib/interactions.js
 
 // @grant           none
 // @match           https://archiveofourown.org/*

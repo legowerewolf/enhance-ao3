@@ -16,8 +16,8 @@ Adds hotkeys to AO3 for:
 - navigation on works, between works in a series, and on index pages
   (<kbd>←</kbd>, <kbd>→</kbd>)
 - bookmarking a work or series (<kbd>b</kbd>)
-- recommending a work or series (<kbd>r</kbd>)
-- creating a private bookmark (<kbd>h</kbd>)
+- recommending a work or series (<kbd>b</kbd>+<kbd>r</kbd>)
+- creating a private bookmark (<kbd>b</kbd>+<kbd>p</kbd>)
 - subscribing to a work, series, or author (<kbd>s</kbd>)
 - kudosing a work (<kbd>k</kbd>)
 - saving a work to Pocket (<kbd>p</kbd>)

@@ -75,8 +75,10 @@ const HOTKEYS = [
     [["arrowright"], goToNextPage],
     [["b"], createBookmark],
     [["s"], subscribe],
-    [["r"], createRecBookmark],
-    [["h"], createPrivateBookmark],
+    [["b", "r"], createRecBookmark],
+    [["b", "p"], createPrivateBookmark],
+    [["r"], warnDeprecation("r", "b+r", createRecBookmark)],
+    [["h"], warnDeprecation("h", "b+p", createPrivateBookmark)],
 ];
 const WORK_HOTKEYS = [
     [["p"], saveWorkToPocket],

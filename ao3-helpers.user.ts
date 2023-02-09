@@ -19,29 +19,41 @@
 
 "use strict";
 
-type NamedLink = { name: string; link: string };
-type HotkeyConfig = [string[] | Set<string>, () => void];
-
 // section: CSS selectors for the elements we want to interact with
 
 const SELECTORS = {
-	commitBookmarkButton: "#bookmark-form input[type='submit'][name='commit']",
-	openBookmarkFormButton: "li.bookmark a.bookmark_form_placement_open",
 	kudosButton: "#kudo_submit",
+
 	commentField: "textarea.comment_form",
-	workNextChapterLink: "li.chapter.next a",
-	workPreviousChapterLink: "li.chapter.previous a",
-	seriesNextWorkLink: "dd.series span:only-child a.next",
-	seriesPreviousWorkLink: "dd.series span:only-child a.previous",
-	indexNextPageLink: "li.next a[rel='next']",
-	indexPreviousPageLink: "li.previous a[rel='prev']",
+
+	chaptersStatsSpan: ".stats dd.chapters",
+
+	markForLaterButton: "li.mark a",
+
+	shareButton: "li.share a",
+
+	openBookmarkFormButton: "li.bookmark a.bookmark_form_placement_open",
+	commitBookmarkButton: "#bookmark-form input[type='submit'][name='commit']",
+	bookmarkRecCheckbox: "#bookmark_rec",
+	bookmarkRecCheckboxLabel: "label[for='bookmark_rec']",
+	bookmarkPrivateCheckbox: "#bookmark_private",
+	bookmarkPrivateCheckboxLabel: "label[for='bookmark_private']",
+
 	subscribeButton: "#new_subscription input[type='submit']",
 	hiddenSubscribeDeleteInput:
 		"#new_subscription input[name='_method'][value='delete']",
-	chaptersStatsSpan: ".stats dd.chapters",
 
-	bookmarkRecCheckboxLabel: "label[for='bookmark_rec']",
-	bookmarkPrivateCheckboxLabel: "label[for='bookmark_private']",
+	viewWorkEntireButton: "li.chapter.entire a",
+	viewWorkChapterByChapterButton: "li.chapter.bychapter a",
+
+	workNextChapterLink: "li.chapter.next a",
+	workPreviousChapterLink: "li.chapter.previous a",
+
+	seriesNextWorkLink: "dd.series span:only-child a.next",
+	seriesPreviousWorkLink: "dd.series span:only-child a.previous",
+
+	indexNextPageLink: "li.next a[rel='next']",
+	indexPreviousPageLink: "li.previous a[rel='prev']",
 };
 
 // section: hotkey action functions
@@ -84,6 +96,10 @@ const subscribe = () => {
 };
 
 const saveWorkToPocket = () => {
+	if (document.AO3_work_data.id === -1) {
+		alert("Work ID not found. Are you sure this is a work page?");
+	}
+
 	let pocketSubmitURL = new URL("https://getpocket.com/save");
 	pocketSubmitURL.searchParams.set(
 		"url",
@@ -169,14 +185,15 @@ function getWorkData(): WorkData {
 
 	// get work ID
 	let id = -1;
-	try {
-		let shareButton = getElement<HTMLAnchorElement>("li.share a");
-		let matches = shareButton.href.match(/works\/(\d+)/);
-		if (1 in matches) id = parseInt(matches[1]);
-		else throw "No work ID found in share button URL.";
-	} catch (e) {
-		console.error("Could not find work ID.", e);
-	}
+	let hasWorkLink = doFirst(
+		() => getElement<HTMLAnchorElement>(SELECTORS.markForLaterButton),
+		() => getElement<HTMLAnchorElement>(SELECTORS.shareButton),
+		() => getElement<HTMLAnchorElement>(SELECTORS.viewWorkEntireButton),
+		() =>
+			getElement<HTMLAnchorElement>(SELECTORS.viewWorkChapterByChapterButton)
+	)();
+	let matches = hasWorkLink.href.match(/works\/(\d+)/);
+	if (1 in matches) id = parseInt(matches[1]);
 
 	// get author
 	let author: NamedLink;

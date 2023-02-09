@@ -61,12 +61,16 @@ const SELECTORS = {
 const createBookmark = click(SELECTORS.commitBookmarkButton);
 
 const createRecBookmark = doSequence(
-	setProperty<HTMLInputElement>("#bookmark_rec", "checked", true),
+	setProperty<HTMLInputElement>(SELECTORS.bookmarkRecCheckbox, "checked", true),
 	createBookmark
 );
 
 const createPrivateBookmark = doSequence(
-	setProperty<HTMLInputElement>("#bookmark_private", "checked", true),
+	setProperty<HTMLInputElement>(
+		SELECTORS.bookmarkPrivateCheckbox,
+		"checked",
+		true
+	),
 	createBookmark
 );
 

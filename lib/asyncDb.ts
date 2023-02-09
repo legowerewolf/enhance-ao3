@@ -64,6 +64,10 @@ export async function connect(
 				dbConnectionPool.delete(databaseSchema.name);
 			};
 
+			database.onclose = () => {
+				dbConnectionPool.delete(databaseSchema.name);
+			};
+
 			resolve(dbConnectionRequest.result);
 		};
 

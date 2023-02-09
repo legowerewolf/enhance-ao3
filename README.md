@@ -28,8 +28,8 @@ Also includes:
   to anyone.** You can view what's been parsed in the browser console as
   `document.AO3_work_data`.
 - [prefetch hinting][mdn-prefetch-faq] for next chapters/works/index pages. As
-  of otwarchive v0.9.328.4 this has no effect, but it should make the reading
-  experience smoother in the future.
+  of otwarchive v0.9.336.10 this has no effect due to cache policy response
+  headers, but it should make the reading experience smoother in the future.
 
 <small>_View the
 [related issues](https://github.com/legowerewolf/Userscripts/issues?q=is%3Aissue+is%3Aopen+label%3Aao3-helpers)

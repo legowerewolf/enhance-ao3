@@ -2,7 +2,7 @@
 // @name            AO3 Hotkeys (branch:beta)
 // @namespace       legowerewolf.net
 // @author          Lego (@legowerewolf)
-// @version         0.5.7
+// @version         0.5.8
 // @description     Adds hotkeys to AO3 for navigation and work- and series-related actions.
 // @homepageURL     https://github.com/legowerewolf/Userscripts/tree/beta
 // @supportURL      https://github.com/legowerewolf/Userscripts/issues/new?labels=ao3-helpers
@@ -16,26 +16,32 @@
 "use strict";
 // section: CSS selectors for the elements we want to interact with
 const SELECTORS = {
-    commitBookmarkButton: "#bookmark-form input[type='submit'][name='commit']",
-    openBookmarkFormButton: "li.bookmark a.bookmark_form_placement_open",
     kudosButton: "#kudo_submit",
     commentField: "textarea.comment_form",
+    chaptersStatsSpan: ".stats dd.chapters",
+    markForLaterButton: "li.mark a",
+    shareButton: "li.share a",
+    openBookmarkFormButton: "li.bookmark a.bookmark_form_placement_open",
+    commitBookmarkButton: "#bookmark-form input[type='submit'][name='commit']",
+    bookmarkRecCheckbox: "#bookmark_rec",
+    bookmarkRecCheckboxLabel: "label[for='bookmark_rec']",
+    bookmarkPrivateCheckbox: "#bookmark_private",
+    bookmarkPrivateCheckboxLabel: "label[for='bookmark_private']",
+    subscribeButton: "#new_subscription input[type='submit']",
+    hiddenSubscribeDeleteInput: "#new_subscription input[name='_method'][value='delete']",
+    viewWorkEntireButton: "li.chapter.entire a",
+    viewWorkChapterByChapterButton: "li.chapter.bychapter a",
     workNextChapterLink: "li.chapter.next a",
     workPreviousChapterLink: "li.chapter.previous a",
     seriesNextWorkLink: "dd.series span:only-child a.next",
     seriesPreviousWorkLink: "dd.series span:only-child a.previous",
     indexNextPageLink: "li.next a[rel='next']",
     indexPreviousPageLink: "li.previous a[rel='prev']",
-    subscribeButton: "#new_subscription input[type='submit']",
-    hiddenSubscribeDeleteInput: "#new_subscription input[name='_method'][value='delete']",
-    chaptersStatsSpan: ".stats dd.chapters",
-    bookmarkRecCheckboxLabel: "label[for='bookmark_rec']",
-    bookmarkPrivateCheckboxLabel: "label[for='bookmark_private']",
 };
 // section: hotkey action functions
 const createBookmark = click(SELECTORS.commitBookmarkButton);
-const createRecBookmark = doSequence(setProperty("#bookmark_rec", "checked", true), createBookmark);
-const createPrivateBookmark = doSequence(setProperty("#bookmark_private", "checked", true), createBookmark);
+const createRecBookmark = doSequence(setProperty(SELECTORS.bookmarkRecCheckbox, "checked", true), createBookmark);
+const createPrivateBookmark = doSequence(setProperty(SELECTORS.bookmarkPrivateCheckbox, "checked", true), createBookmark);
 const goToNextPage = doFirst(click(SELECTORS.indexNextPageLink), click(SELECTORS.workNextChapterLink), click(SELECTORS.seriesNextWorkLink));
 const goToPreviousPage = doFirst(click(SELECTORS.indexPreviousPageLink), click(SELECTORS.workPreviousChapterLink), click(SELECTORS.seriesPreviousWorkLink));
 const superkudos = doSequence(click(SELECTORS.kudosButton), appendText(SELECTORS.commentField, "❤️"));
@@ -48,6 +54,9 @@ const subscribe = () => {
     }
 };
 const saveWorkToPocket = () => {
+    if (document.AO3_work_data.id === -1) {
+        alert("Work ID not found. Are you sure this is a work page?");
+    }
     let pocketSubmitURL = new URL("https://getpocket.com/save");
     pocketSubmitURL.searchParams.set("url", `https://archiveofourown.org/works/${document.AO3_work_data.id}?view_adult=true&view_full_work=true`);
     pocketSubmitURL.searchParams.set("title", document.title);
@@ -108,17 +117,10 @@ function getWorkData() {
     let title = getElement(".title.heading").innerText.trim();
     // get work ID
     let id = -1;
-    try {
-        let shareButton = getElement("li.share a");
-        let matches = shareButton.href.match(/works\/(\d+)/);
-        if (1 in matches)
-            id = parseInt(matches[1]);
-        else
-            throw "No work ID found in share button URL.";
-    }
-    catch (e) {
-        console.error("Could not find work ID.", e);
-    }
+    let hasWorkLink = doFirst(() => getElement(SELECTORS.markForLaterButton), () => getElement(SELECTORS.shareButton), () => getElement(SELECTORS.viewWorkEntireButton), () => getElement(SELECTORS.viewWorkChapterByChapterButton))();
+    let matches = hasWorkLink.href.match(/works\/(\d+)/);
+    if (1 in matches)
+        id = parseInt(matches[1]);
     // get author
     let author;
     try {

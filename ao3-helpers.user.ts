@@ -163,7 +163,7 @@ const HOTKEYS_DISPLAY = {
 
 // section: functions that execute automatically, as part of initialization
 
-function getWorkData() {
+function getWorkData(): WorkData {
 	// get title
 	let title = getElement(".title.heading").innerText.trim();
 

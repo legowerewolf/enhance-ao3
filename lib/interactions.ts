@@ -97,8 +97,8 @@ const doSequence =
  * @returns the return value of the function that did not throw an error, or undefined if all functions threw errors
  */
 const doFirst =
-	(...actions: CallableFunction[]) =>
-	() => {
+	<T>(...actions: (() => T)[]) =>
+	(): T | undefined => {
 		for (let action of actions) {
 			try {
 				return action();

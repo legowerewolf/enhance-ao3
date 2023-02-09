@@ -121,6 +121,8 @@ function getWorkData() {
     let matches = hasWorkLink.href.match(/works\/(\d+)/);
     if (1 in matches)
         id = parseInt(matches[1]);
+    else
+        console.error("Could not find work ID on page.");
     // get author
     let author;
     try {

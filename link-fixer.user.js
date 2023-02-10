@@ -3,9 +3,9 @@
 // @namespace   	legowerewolf.net
 // @match       	*://*/*
 // @grant       	none
-// @version     	1.1
-// @updateURL		https://raw.githubusercontent.com/legowerewolf/Userscripts/master/link-fixer.user.js
-// @downloadURL		https://raw.githubusercontent.com/legowerewolf/Userscripts/master/link-fixer.user.js
+// @version     	1.3
+// @updateURL		https://raw.githubusercontent.com/legowerewolf/Userscripts/main/link-fixer.user.js
+// @downloadURL		https://raw.githubusercontent.com/legowerewolf/Userscripts/main/link-fixer.user.js
 // @author      	legowerewolf.net
 // ==/UserScript==
 

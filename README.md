@@ -1,5 +1,10 @@
 # Miscellaneous userscripts and bookmarklets
 
+⚠️ This repository has transitioned from `main` to `master` as the primary
+branch. Please ensure that userscripts are monitoring the correct branch for
+updates. Replace `master` with `main` in the `@updateURL` and `@downloadURL`
+entries in the userscripts' headers.
+
 ## Userscripts
 
 Don't have a userscript extension? Try

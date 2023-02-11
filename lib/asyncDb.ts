@@ -2,14 +2,17 @@
  * A DatabaseSchema is a description of a database. It contains the name of the
  * database and a list of migrations.
  *
- * A migration is a function that takes a database connection and changes the
- * database schema. The list of migrations for a given schema should only ever
- * be appended to. This ensures that the database can be upgraded smoothly.
  */
 interface DatabaseSchema {
 	name: string;
 	migrations: Array<Migration>;
 }
+
+/**
+ * A migration is a function that takes a database connection and changes the
+ * database schema. The list of migrations for a given schema should only ever
+ * be appended to. This ensures that the database can be upgraded smoothly.
+ */
 type Migration = (database: IDBDatabase) => void;
 
 /**
@@ -34,9 +37,7 @@ let dbConnectionPool = new Map();
 /**
  * Returns a connection to the database. Reuses existing connection if available.
  */
-export async function connect(
-	databaseSchema: DatabaseSchema
-): Promise<IDBDatabase> {
+async function connect(databaseSchema: DatabaseSchema): Promise<IDBDatabase> {
 	if (dbConnectionPool.has(databaseSchema.name)) {
 		return dbConnectionPool.get(databaseSchema.name);
 	}
@@ -78,18 +79,22 @@ export async function connect(
 }
 
 /**
- * Returns all the objects in the given object store as an array.
+ * Plumbing function. Returns an object store with the given name and mode.
  */
-async function getAll(
+async function getStore(
 	databaseSchema: DatabaseSchema,
-	objectStoreName: string
-): Promise<any[]> {
+	objectStoreName: string,
+	mode: IDBTransactionMode
+): Promise<IDBObjectStore> {
 	let database = await connect(databaseSchema);
-	let transaction = database.transaction(objectStoreName, "readonly");
+	let transaction = database.transaction(objectStoreName, mode);
+	return transaction.objectStore(objectStoreName);
+}
 
-	let store = transaction.objectStore(objectStoreName);
-	let request = store.getAll();
-
+/**
+ * Plumbing function. Wraps a request in a promise.
+ */
+async function handleRequest(request: IDBRequest): Promise<any> {
 	return new Promise((resolve, reject) => {
 		request.onsuccess = () => {
 			resolve(request.result);
@@ -101,6 +106,20 @@ async function getAll(
 }
 
 /**
+ * Returns all the objects in the given object store as an array.
+ */
+async function getAll(
+	databaseSchema: DatabaseSchema,
+	objectStoreName: string
+): Promise<any[]> {
+	let store = await getStore(databaseSchema, objectStoreName, "readonly");
+
+	let request = store.getAll();
+
+	return handleRequest(request);
+}
+
+/**
  * Adds an object to the given object store.
  */
 async function add(
@@ -108,26 +127,9 @@ async function add(
 	objectStoreName: string,
 	object: any
 ): Promise<IDBValidKey> {
-	let database = await connect(databaseSchema);
-	let transaction = database.transaction(objectStoreName, "readwrite");
+	let store = await getStore(databaseSchema, objectStoreName, "readwrite");
 
-	let store = transaction.objectStore(objectStoreName);
 	let request = store.add(object);
 
-	return new Promise((resolve, reject) => {
-		request.onsuccess = () => {
-			resolve(request.result);
-		};
-		request.onerror = () => {
-			reject(request.error);
-		};
-	});
+	return handleRequest(request);
 }
-
-const database_tools = {
-	connect,
-	getAll,
-	add,
-};
-
-export default database_tools;

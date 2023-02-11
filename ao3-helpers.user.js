@@ -2,7 +2,7 @@
 // @name            AO3 Hotkeys (branch:beta)
 // @namespace       legowerewolf.net
 // @author          Lego (@legowerewolf)
-// @version         0.5.9
+// @version         0.5.10
 // @description     Adds hotkeys to AO3 for navigation and work- and series-related actions.
 // @homepageURL     https://github.com/legowerewolf/Userscripts/tree/beta
 // @supportURL      https://github.com/legowerewolf/Userscripts/issues/new?labels=ao3-helpers
@@ -45,6 +45,42 @@ const createPrivateBookmark = doSequence(setProperty(SELECTORS.bookmarkPrivateCh
 const goToNextPage = doFirst(click(SELECTORS.indexNextPageLink), click(SELECTORS.workNextChapterLink), click(SELECTORS.seriesNextWorkLink));
 const goToPreviousPage = doFirst(click(SELECTORS.indexPreviousPageLink), click(SELECTORS.workPreviousChapterLink), click(SELECTORS.seriesPreviousWorkLink));
 const superkudos = doSequence(click(SELECTORS.kudosButton), appendText(SELECTORS.commentField, "❤️"));
+const supercomment = () => {
+    // get the selection, if any
+    let selection = document.getSelection();
+    if (selection.type !== "Range")
+        return;
+    // grab the text and return position
+    let anchor = selection.anchorNode;
+    let text = selection.toString();
+    // update the comment field and place the cursor at the end
+    const commentField = getElement(SELECTORS.commentField);
+    if (commentField.value.length > 0 && !commentField.value.endsWith("\n"))
+        commentField.value += "\n";
+    commentField.value += text
+        .split("\n")
+        .map((line) => `> ${line}\n`)
+        .join("");
+    commentField.focus();
+    commentField.selectionStart = commentField.selectionEnd =
+        commentField.value.length;
+    // add a link back to where we selected from
+    let backlink;
+    try {
+        backlink = getElement("#ao3-helper-comment-backlink");
+    }
+    catch {
+        backlink = document.createElement("a");
+        backlink.id = "ao3-helper-comment-backlink";
+        backlink.classList.add("action");
+        backlink.innerText = "Return to last selection";
+        let insertionPoint = getElement("#add_comment p.submit.actions");
+        insertionPoint.prepend(backlink);
+    }
+    finally {
+        backlink.onclick = () => anchor.parentElement.scrollIntoView();
+    }
+};
 const subscribe = () => {
     try {
         getElement(SELECTORS.hiddenSubscribeDeleteInput);
@@ -88,6 +124,7 @@ const HOTKEYS = [
     [["b", "p"], createPrivateBookmark],
     [["r"], warnDeprecation("r", "b + r", createRecBookmark)],
     [["h"], warnDeprecation("h", "b + p", createPrivateBookmark)],
+    [["c"], supercomment],
 ];
 const WORK_HOTKEYS = [
     [["p"], saveWorkToPocket],

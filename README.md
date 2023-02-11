@@ -20,6 +20,8 @@ Adds hotkeys to AO3 for:
 - creating a private bookmark (<kbd>b</kbd>+<kbd>p</kbd>)
 - subscribing to a work, series, or author (<kbd>s</kbd>)
 - kudosing a work (<kbd>k</kbd>)
+- copying a selected text fragment to the comment box and jumping to it
+  (<kbd>c</kbd>)
 - saving a work to Pocket (<kbd>p</kbd>)
 
 Also includes:

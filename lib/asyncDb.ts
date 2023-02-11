@@ -33,103 +33,137 @@ const deleteObjectStore =
 		database.deleteObjectStore(name);
 	};
 
-let dbConnectionPool = new Map();
-/**
- * Returns a connection to the database. Reuses existing connection if available.
- */
-async function connect(databaseSchema: DatabaseSchema): Promise<IDBDatabase> {
-	if (dbConnectionPool.has(databaseSchema.name)) {
-		return dbConnectionPool.get(databaseSchema.name);
+class AsyncDB {
+	private static connectionPool = new Map();
+
+	constructor(private databaseSchema: DatabaseSchema) {}
+
+	/**
+	 * Returns a connection to the database. Reuses existing connection if available.
+	 */
+	private async connect(): Promise<IDBDatabase> {
+		if (AsyncDB.connectionPool.has(this.databaseSchema.name)) {
+			return AsyncDB.connectionPool.get(this.databaseSchema.name);
+		}
+
+		let dbConnectionRequest = window.indexedDB.open(
+			this.databaseSchema.name,
+			this.databaseSchema.migrations.length
+		);
+
+		dbConnectionRequest.onupgradeneeded = (event: IDBVersionChangeEvent) => {
+			let dbConnection = dbConnectionRequest.result;
+
+			for (let i = event.oldVersion; i < event.newVersion; i++) {
+				this.databaseSchema.migrations[i](dbConnection);
+			}
+		};
+
+		return new Promise((resolve, reject) => {
+			dbConnectionRequest.onsuccess = () => {
+				let database = dbConnectionRequest.result;
+				AsyncDB.connectionPool.set(this.databaseSchema.name, database);
+
+				database.onversionchange = () => {
+					database.close();
+					AsyncDB.connectionPool.delete(this.databaseSchema.name);
+				};
+
+				database.onclose = () => {
+					AsyncDB.connectionPool.delete(this.databaseSchema.name);
+				};
+
+				resolve(dbConnectionRequest.result);
+			};
+
+			dbConnectionRequest.onerror = () => {
+				reject("Error opening database: " + dbConnectionRequest.error);
+			};
+		});
 	}
 
-	let dbConnectionRequest = window.indexedDB.open(
-		databaseSchema.name,
-		databaseSchema.migrations.length
-	);
+	/**
+	 * Plumbing function. Returns an object store with the given name and mode.
+	 */
+	private async getStore(
+		objectStoreName: string,
+		mode: IDBTransactionMode
+	): Promise<IDBObjectStore> {
+		let database = await this.connect();
+		let transaction = database.transaction(objectStoreName, mode);
+		return transaction.objectStore(objectStoreName);
+	}
 
-	dbConnectionRequest.onupgradeneeded = (event: IDBVersionChangeEvent) => {
-		let dbConnection = dbConnectionRequest.result;
-
-		for (let i = event.oldVersion; i < event.newVersion; i++) {
-			databaseSchema.migrations[i](dbConnection);
-		}
-	};
-
-	return new Promise((resolve, reject) => {
-		dbConnectionRequest.onsuccess = () => {
-			let database = dbConnectionRequest.result;
-			dbConnectionPool.set(databaseSchema.name, database);
-
-			database.onversionchange = () => {
-				database.close();
-				dbConnectionPool.delete(databaseSchema.name);
+	/**
+	 * Plumbing function. Wraps a request in a promise.
+	 */
+	private async handleRequest(request: IDBRequest): Promise<any> {
+		return new Promise((resolve, reject) => {
+			request.onsuccess = () => {
+				resolve(request.result);
 			};
-
-			database.onclose = () => {
-				dbConnectionPool.delete(databaseSchema.name);
+			request.onerror = () => {
+				reject(request.error);
 			};
+		});
+	}
 
-			resolve(dbConnectionRequest.result);
-		};
+	/**
+	 * Returns the object with the given key from the given object store, or undefined if no such object exists.
+	 */
+	async get(objectStoreName: string, key: IDBValidKey): Promise<any> {
+		let store = await this.getStore(objectStoreName, "readonly");
 
-		dbConnectionRequest.onerror = () => {
-			reject("Error opening database: " + dbConnectionRequest.error);
-		};
-	});
-}
+		let request = store.get(key);
 
-/**
- * Plumbing function. Returns an object store with the given name and mode.
- */
-async function getStore(
-	databaseSchema: DatabaseSchema,
-	objectStoreName: string,
-	mode: IDBTransactionMode
-): Promise<IDBObjectStore> {
-	let database = await connect(databaseSchema);
-	let transaction = database.transaction(objectStoreName, mode);
-	return transaction.objectStore(objectStoreName);
-}
+		return this.handleRequest(request);
+	}
 
-/**
- * Plumbing function. Wraps a request in a promise.
- */
-async function handleRequest(request: IDBRequest): Promise<any> {
-	return new Promise((resolve, reject) => {
-		request.onsuccess = () => {
-			resolve(request.result);
-		};
-		request.onerror = () => {
-			reject(request.error);
-		};
-	});
-}
+	/**
+	 * Returns an array of all objects in the given object store.
+	 */
+	async getAll(objectStoreName: string): Promise<any[]> {
+		let store = await this.getStore(objectStoreName, "readonly");
 
-/**
- * Returns all the objects in the given object store as an array.
- */
-async function getAll(
-	databaseSchema: DatabaseSchema,
-	objectStoreName: string
-): Promise<any[]> {
-	let store = await getStore(databaseSchema, objectStoreName, "readonly");
+		let request = store.getAll();
 
-	let request = store.getAll();
+		return this.handleRequest(request);
+	}
 
-	return handleRequest(request);
-}
+	/**
+	 * Adds an object to the given object store. Returns the key of the new object.
+	 */
+	async add(objectStoreName: string, object: any): Promise<IDBValidKey> {
+		let store = await this.getStore(objectStoreName, "readwrite");
 
-/**
- * Adds an object to the given object store.
- */
-async function add(
-	databaseSchema: DatabaseSchema,
-	objectStoreName: string,
-	object: any
-): Promise<IDBValidKey> {
-	let store = await getStore(databaseSchema, objectStoreName, "readwrite");
+		let request = store.add(object);
 
-	let request = store.add(object);
+		return this.handleRequest(request);
+	}
 
-	return handleRequest(request);
+	/**
+	 * Deletes the object with the given key from the given object store.
+	 */
+	async delete(objectStoreName: string, key: IDBValidKey): Promise<void> {
+		let store = await this.getStore(objectStoreName, "readwrite");
+
+		let request = store.delete(key);
+
+		return this.handleRequest(request);
+	}
+
+	/**
+	 * Deletes the database, including all object stores and data.
+	 */
+	async reset(): Promise<void> {
+		let database = await this.connect();
+		database.close();
+		AsyncDB.connectionPool.delete(this.databaseSchema.name);
+
+		let deleteRequest = window.indexedDB.deleteDatabase(
+			this.databaseSchema.name
+		);
+
+		return this.handleRequest(deleteRequest);
+	}
 }

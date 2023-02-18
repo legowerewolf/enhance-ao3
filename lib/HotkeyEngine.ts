@@ -21,7 +21,7 @@ class HotkeyEngine extends EventTarget {
 		this.registeredActions = new Map();
 	}
 
-	onKeydown(e: KeyboardEvent) {
+	onKeydown(e: KeyboardEvent & { type: "keydown"; target: HTMLElement }) {
 		this.currentKeys.add(e.key);
 
 		if (this.timeout) clearTimeout(this.timeout);
@@ -31,12 +31,10 @@ class HotkeyEngine extends EventTarget {
 		}, 5000);
 	}
 
-	onKeyup(e: KeyboardEvent) {
-		let isInputElement = false;
-		if (e.target instanceof HTMLElement)
-			isInputElement =
-				["INPUT", "TEXTAREA"].includes(e.target.tagName) ||
-				e.target.isContentEditable;
+	onKeyup(e: KeyboardEvent & { type: "keyup"; target: HTMLElement }) {
+		let isInputElement =
+			["INPUT", "TEXTAREA"].includes(e.target.tagName) ||
+			e.target.isContentEditable;
 
 		if (
 			/* target is not an input element */
@@ -71,7 +69,8 @@ class HotkeyEngine extends EventTarget {
 	}
 
 	attach(element: HTMLElement) {
-		if (!(element instanceof HTMLElement)) throw new Error("Must be element");
+		if (!(element instanceof element.ownerDocument.defaultView.HTMLElement))
+			throw new Error("Must be element");
 
 		this.detach();
 

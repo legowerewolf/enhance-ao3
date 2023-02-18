@@ -6,7 +6,11 @@ function getElement<T extends HTMLElement>(
 	selector: string | T,
 	parent: ParentNode = document
 ): T {
-	if (typeof selector === "object") return selector;
+	if (
+		typeof selector === "object" &&
+		selector instanceof selector.ownerDocument.defaultView.HTMLElement
+	)
+		return selector;
 	let element: T = parent.querySelector(selector);
 	if (element === null)
 		throw new Error(`no element found for selector: "${selector}"`);
@@ -93,15 +97,16 @@ const setAttribute =
 const appendText =
 	(selector: Parameters<typeof getElement>[0], text: string) => () => {
 		let element = getElement(selector);
-		if (element instanceof HTMLInputElement) {
+		if (
+			element instanceof element.ownerDocument.defaultView.HTMLInputElement ||
+			element instanceof element.ownerDocument.defaultView.HTMLTextAreaElement
+		) {
 			element.value += text;
-		} else if (element instanceof HTMLTextAreaElement) {
-			element.value += text;
-		} else if (element instanceof HTMLElement && element.contentEditable) {
+		} else if (element.contentEditable === "true") {
 			element.lastElementChild.textContent += text;
 		} else {
 			throw new Error(
-				`selected element is not an input or textarea: "${selector}": ${element}`
+				`selected element is not an editable area: "${selector}": ${element}`
 			);
 		}
 	};

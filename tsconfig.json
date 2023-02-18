@@ -1,0 +1,9 @@
+{
+	"include": ["./**/*"],
+	"compilerOptions": {
+		"lib": ["ESNext", "dom"],
+		"target": "ES2022",
+		"noImplicitAny": true,
+		"module": "ES2022"
+	}
+}

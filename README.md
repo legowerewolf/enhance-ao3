@@ -12,7 +12,7 @@ Don't have a userscript extension? Try
 
 ### ao3-helpers (functional, active maintenance)
 
-[Install](https://raw.githubusercontent.com/legowerewolf/Userscripts/main/ao3-helpers.user.js)
+[Install](https://raw.githubusercontent.com/legowerewolf/Userscripts/beta/ao3-helpers.user.js)
 |
 [File a bug report](https://github.com/legowerewolf/Userscripts/issues/new?labels=ao3-helpers)
 
@@ -21,10 +21,12 @@ Adds hotkeys to AO3 for:
 - navigation on works, between works in a series, and on index pages
   (<kbd>←</kbd>, <kbd>→</kbd>)
 - bookmarking a work or series (<kbd>b</kbd>)
-- recommending a work or series (<kbd>r</kbd>)
-- creating a private bookmark (<kbd>h</kbd>)
+- recommending a work or series (<kbd>b</kbd>+<kbd>r</kbd>)
+- creating a private bookmark (<kbd>b</kbd>+<kbd>p</kbd>)
 - subscribing to a work, series, or author (<kbd>s</kbd>)
 - kudosing a work (<kbd>k</kbd>)
+- copying a selected text fragment to the comment box and jumping to it
+  (<kbd>c</kbd>)
 - saving a work to Pocket (<kbd>p</kbd>)
 
 Also includes:
@@ -33,8 +35,8 @@ Also includes:
   to anyone.** You can view what's been parsed in the browser console as
   `document.AO3_work_data`.
 - [prefetch hinting][mdn-prefetch-faq] for next chapters/works/index pages. As
-  of otwarchive v0.9.328.4 this has no effect, but it should make the reading
-  experience smoother in the future.
+  of otwarchive v0.9.336.10 this has no effect due to cache policy response
+  headers, but it should make the reading experience smoother in the future.
 
 <small>_View the
 [related issues](https://github.com/legowerewolf/Userscripts/issues?q=is%3Aissue+is%3Aopen+label%3Aao3-helpers)

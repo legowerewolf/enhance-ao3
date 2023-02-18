@@ -3,7 +3,7 @@
 ## Install
 
 If you have a userscript extension installed,
-[click here to install.](https://raw.githubusercontent.com/legowerewolf/Userscripts/main/ao3-helpers.user.js)
+[click here to install.](https://raw.githubusercontent.com/legowerewolf/enhance-ao3/main/ao3-helpers.user.js)
 
 Don't have a userscript extension? Try
 [Violentmonkey](https://violentmonkey.github.io/)!

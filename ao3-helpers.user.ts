@@ -114,16 +114,22 @@ const supercomment = () => {
 	let value = selection.getRangeAt(0).cloneContents();
 
 	// update the comment field and place the cursor at the end
+	const commentFieldFrame = getElement<HTMLIFrameElement>(
+		SELECTORS.tinyMCEFrame
+	);
 	const commentField = getElement<HTMLBodyElement>(
 		SELECTORS.tinyMCECommentField,
-		getElement<HTMLIFrameElement>(SELECTORS.tinyMCEFrame).contentDocument
+		commentFieldFrame.contentDocument
 	);
 	const quote = document.createElement("blockquote");
 	quote.appendChild(value);
 	commentField.appendChild(quote);
-	const newParagraph = document.createElement("p");
+	const newParagraph = Object.assign(document.createElement("p"), {
+		innerHTML: `<br data-mce-bogus="1">`,
+	});
 	commentField.appendChild(newParagraph);
-	newParagraph.focus();
+	commentFieldFrame.focus();
+	commentFieldFrame.contentWindow.getSelection().collapse(newParagraph, 0);
 
 	// add a link back to where we selected from
 	let backlink: HTMLAnchorElement;
@@ -147,7 +153,9 @@ const subscribe = () => {
 	try {
 		getElement(SELECTORS.hiddenSubscribeDeleteInput);
 	} catch {
-		click(SELECTORS.subscribeButton)();
+		try {
+			click(SELECTORS.subscribeButton)();
+		} catch {}
 	}
 };
 

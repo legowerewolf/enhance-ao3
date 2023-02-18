@@ -63,13 +63,17 @@ const supercomment = () => {
     let anchor = selection.anchorNode;
     let value = selection.getRangeAt(0).cloneContents();
     // update the comment field and place the cursor at the end
-    const commentField = getElement(SELECTORS.tinyMCECommentField, getElement(SELECTORS.tinyMCEFrame).contentDocument);
+    const commentFieldFrame = getElement(SELECTORS.tinyMCEFrame);
+    const commentField = getElement(SELECTORS.tinyMCECommentField, commentFieldFrame.contentDocument);
     const quote = document.createElement("blockquote");
     quote.appendChild(value);
     commentField.appendChild(quote);
-    const newParagraph = document.createElement("p");
+    const newParagraph = Object.assign(document.createElement("p"), {
+        innerHTML: `<br data-mce-bogus="1">`,
+    });
     commentField.appendChild(newParagraph);
-    newParagraph.focus();
+    commentFieldFrame.focus();
+    commentFieldFrame.contentWindow.getSelection().collapse(newParagraph, 0);
     // add a link back to where we selected from
     let backlink;
     try {
@@ -92,7 +96,10 @@ const subscribe = () => {
         getElement(SELECTORS.hiddenSubscribeDeleteInput);
     }
     catch {
-        click(SELECTORS.subscribeButton)();
+        try {
+            click(SELECTORS.subscribeButton)();
+        }
+        catch { }
     }
 };
 const saveWorkToPocket = () => {

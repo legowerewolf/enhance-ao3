@@ -2,7 +2,7 @@
 // @name            AO3 Hotkeys (branch:beta)
 // @namespace       legowerewolf.net
 // @author          Lego (@legowerewolf)
-// @version         0.5.14
+// @version         0.5.15
 // @description     Adds hotkeys to AO3 for navigation and work- and series-related actions.
 // @homepageURL     https://github.com/legowerewolf/Userscripts/tree/beta
 // @supportURL      https://github.com/legowerewolf/Userscripts/issues/new?labels=ao3-helpers
@@ -58,10 +58,12 @@ const supercomment = () => {
     let value = selection.getRangeAt(0).cloneContents();
     // update the comment field and place the cursor at the end
     const commentField = getElement(SELECTORS.tinyMCECommentField, getElement(SELECTORS.tinyMCEFrame).contentDocument);
-    let quote = document.createElement("blockquote");
+    const quote = document.createElement("blockquote");
     quote.appendChild(value);
     commentField.appendChild(quote);
-    commentField.focus();
+    const newParagraph = document.createElement("p");
+    commentField.appendChild(newParagraph);
+    newParagraph.focus();
     // add a link back to where we selected from
     let backlink;
     try {
@@ -230,7 +232,7 @@ async function injectRTE() {
     for (const src of scripts) {
         let el = Object.assign(document.createElement("script"), { src });
         document.head.appendChild(el);
-        await new Promise((resolve) => (el.onload = resolve));
+        await listenForEvent(el, "load");
     }
     const commentField = getElement(SELECTORS.plainCommentField);
     addEditor(commentField.id);

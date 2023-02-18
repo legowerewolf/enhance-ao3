@@ -23,6 +23,17 @@ function getElements<T extends HTMLElement>(selector: string): Array<T> {
 	return Array.from(elements);
 }
 
+function listenForEvent(emitter: EventTarget, event: string) {
+	return new Promise<void>((resolve) => {
+		const listener = () => {
+			resolve();
+			emitter.removeEventListener(event, listener);
+		};
+
+		emitter.addEventListener(event, listener);
+	});
+}
+
 /**
  * @param selector a CSS selector
  * @returns nothing, but propogates any errors thrown by getElement

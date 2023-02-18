@@ -2,7 +2,7 @@
 // @name            AO3 Hotkeys (branch:beta)
 // @namespace       legowerewolf.net
 // @author          Lego (@legowerewolf)
-// @version         0.5.11
+// @version         0.5.12
 // @description     Adds hotkeys to AO3 for navigation and work- and series-related actions.
 // @homepageURL     https://github.com/legowerewolf/Userscripts/tree/beta
 // @supportURL      https://github.com/legowerewolf/Userscripts/issues/new?labels=ao3-helpers
@@ -22,9 +22,12 @@
 // section: CSS selectors for the elements we want to interact with
 
 const SELECTORS = {
+	workBody: "#workskin",
+
 	kudosButton: "#kudo_submit",
 
-	commentField: "textarea.comment_form",
+	plainCommentField: "textarea.comment_form",
+	tinyMCECommentField: "#tinymce",
 
 	chaptersStatsSpan: ".stats dd.chapters",
 
@@ -88,29 +91,27 @@ const goToPreviousPage = doFirst(
 
 const superkudos = doSequence(
 	click(SELECTORS.kudosButton),
-	appendText(SELECTORS.commentField, "❤️")
+	appendText(SELECTORS.tinyMCECommentField, "❤️")
 );
 
 const supercomment = () => {
 	// get the selection, if any
+	getElement(SELECTORS.workBody).focus();
 	let selection = document.getSelection();
 	if (selection.type !== "Range") return;
 
 	// grab the text and return position
 	let anchor = selection.anchorNode;
-	let text = selection.toString();
+	let value = selection.getRangeAt(0).cloneContents();
 
 	// update the comment field and place the cursor at the end
-	const commentField = getElement<HTMLTextAreaElement>(SELECTORS.commentField);
-	if (commentField.value.length > 0 && !commentField.value.endsWith("\n"))
-		commentField.value += "\n";
-	commentField.value += text
-		.split("\n")
-		.map((line) => `> ${line}\n`)
-		.join("");
+	const commentField = getElement<HTMLBodyElement>(
+		SELECTORS.tinyMCECommentField
+	);
+	let quote = document.createElement("blockquote");
+	quote.appendChild(value);
+	commentField.appendChild(quote);
 	commentField.focus();
-	commentField.selectionStart = commentField.selectionEnd =
-		commentField.value.length;
 
 	// add a link back to where we selected from
 	let backlink: HTMLAnchorElement;
@@ -329,7 +330,7 @@ async function injectRTE() {
 		await new Promise((resolve) => (el.onload = resolve));
 	}
 
-	const commentField = getElement(SELECTORS.commentField);
+	const commentField = getElement(SELECTORS.plainCommentField);
 
 	addEditor(commentField.id);
 }

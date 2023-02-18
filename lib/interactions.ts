@@ -67,6 +67,8 @@ const appendText = (selector: string, text: string) => () => {
 		element.value += text;
 	} else if (element instanceof HTMLTextAreaElement) {
 		element.value += text;
+	} else if (element instanceof HTMLElement && element.contentEditable) {
+		element.lastElementChild.textContent += text;
 	} else {
 		throw new Error(
 			`selected element is not an input or textarea: "${selector}": ${element}`

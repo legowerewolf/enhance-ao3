@@ -1,9 +1,12 @@
 # Miscellaneous userscripts and bookmarklets
 
-⚠️ This repository has transitioned from `master` to `main` as the primary
-branch. Please ensure that userscripts are monitoring the correct branch for
-updates. Replace `master` with `main` in the `@updateURL` and `@downloadURL`
-entries in the userscripts' headers.
+⚠️ This repository has been archived. ⚠️
+
+Development of the ao3-helpers script has been moved to
+[legowerewolf/enhance-ao3](https://github.com/legowerewolf/enhance-ao3) Existing
+users of the script should see that their installation of the script
+automatically updates to point to the new repository. If it doesn't, you can
+reinstall it from there.
 
 ## Userscripts
 

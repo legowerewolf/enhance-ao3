@@ -25,17 +25,29 @@ Don't have a userscript extension? Try
 
 ### Rich text comment box
 
+The comment field on works is now the same rich text editor as is available when
+posting works.
+
 ### Prefetch hinting
 
-- [prefetch hinting][mdn-prefetch-faq] for next chapters/works/index pages. As
-  of otwarchive v0.9.336.10 this has no effect due to cache policy response
-  headers, but it should make the reading experience smoother in the future.
+[Prefetch hinting][mdn-prefetch-faq] is a way to tell the browser what the next
+page is likely to be, so that it can start loading it in the background. The
+script adds prefetch hints for the next chapter in a work, the next work in a
+series, and the next page of works in an index page.
+
+As of otwarchive v0.9.336.10 this has no effect due to cache policy response
+headers, but it should make the reading experience smoother in the future.
 
 ## Experiments
 
-- an experiment to parse metadata from work pages. **This does not send any data
-  to anyone.** You can view what's been parsed in the browser console as
-  `document.AO3_work_data`.
+These may be features that are not yet ready for prime time, or were made
+because they were cool without a clear use case.
+
+### Work metadata parsing
+
+When a work page loads, the script will attempt to parse the metadata from the
+work header. **This does not send any data to anyone.** You can view what's been
+parsed in the browser console as `document.AO3_work_data`.
 
 [mdn-prefetch-faq]:
 	https://developer.mozilla.org/en-US/docs/Web/HTTP/Link_prefetching_FAQ

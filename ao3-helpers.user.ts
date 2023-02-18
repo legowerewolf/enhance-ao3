@@ -2,7 +2,7 @@
 // @name            AO3 Hotkeys (branch:beta)
 // @namespace       legowerewolf.net
 // @author          Lego (@legowerewolf)
-// @version         0.5.13
+// @version         0.5.14
 // @description     Adds hotkeys to AO3 for navigation and work- and series-related actions.
 // @homepageURL     https://github.com/legowerewolf/Userscripts/tree/beta
 // @supportURL      https://github.com/legowerewolf/Userscripts/issues/new?labels=ao3-helpers
@@ -28,7 +28,7 @@ const SELECTORS = {
 
 	plainCommentField: "textarea.comment_form",
 	tinyMCECommentField: "#tinymce",
-	tinyMCEFrame: "#comment-form iframe",
+	tinyMCEFrame: "div.tox-editor-container iframe",
 
 	chaptersStatsSpan: ".stats dd.chapters",
 

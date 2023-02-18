@@ -1,15 +1,15 @@
 // ==UserScript==
-// @name            AO3 Hotkeys (branch:beta)
+// @name            AO3 Enhancement Suite (branch:main)
 // @namespace       legowerewolf.net
 // @author          Lego (@legowerewolf)
-// @version         0.6.0
-// @description     Adds hotkeys to AO3 for navigation and work- and series-related actions.
-// @homepageURL     https://github.com/legowerewolf/Userscripts/tree/beta
-// @supportURL      https://github.com/legowerewolf/Userscripts/issues/new?labels=ao3-helpers
-// @updateURL       https://raw.githubusercontent.com/legowerewolf/Userscripts/beta/ao3-helpers.user.js
-// @downloadURL     https://raw.githubusercontent.com/legowerewolf/Userscripts/beta/ao3-helpers.user.js
-// @require         https://raw.githubusercontent.com/legowerewolf/Userscripts/beta/lib/HotkeyEngine.js
-// @require         https://raw.githubusercontent.com/legowerewolf/Userscripts/beta/lib/interactions.js
+// @version         1.0.0
+// @description     Enhances the AO3 reading experience with hotkeys and other features.
+// @homepageURL     https://github.com/legowerewolf/enhance-ao3/tree/main
+// @supportURL      https://github.com/legowerewolf/enhance-ao3/issues/new?labels=ao3-helpers
+// @updateURL       https://raw.githubusercontent.com/legowerewolf/enhance-ao3/main/ao3-helpers.user.js
+// @downloadURL     https://raw.githubusercontent.com/legowerewolf/enhance-ao3/main/ao3-helpers.user.js
+// @require         https://raw.githubusercontent.com/legowerewolf/enhance-ao3/main/lib/HotkeyEngine.js
+// @require         https://raw.githubusercontent.com/legowerewolf/enhance-ao3/main/lib/interactions.js
 // @grant           none
 // @match           https://archiveofourown.org/*
 // ==/UserScript==

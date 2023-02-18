@@ -2,8 +2,8 @@
 // @name            AO3 Enhancement Suite (branch:main)
 // @namespace       legowerewolf.net
 // @author          Lego (@legowerewolf)
-// @version         0.6.1
-// @description     Adds hotkeys to AO3 for navigation and work- and series-related actions.
+// @version         1.0.0
+// @description     Enhances the AO3 reading experience with hotkeys and other features.
 // @homepageURL     https://github.com/legowerewolf/enhance-ao3/tree/main
 // @supportURL      https://github.com/legowerewolf/enhance-ao3/issues/new?labels=ao3-helpers
 

@@ -90,16 +90,19 @@ const goToPreviousPage = doFirst(
 	click(SELECTORS.seriesPreviousWorkLink)
 );
 
-const superkudos = doSequence(
-	click(SELECTORS.kudosButton),
+// this gets wrapped in a closure so the inner getElement call is evaluated at
+// runtime - otherwise it would be evaluated when the script loads, when the
+// element doesn't exist yet. Otherwise, this would be a doSequence.
+const superkudos = () => {
+	click(SELECTORS.kudosButton)();
 	appendText(
 		getElement<HTMLBodyElement>(
 			SELECTORS.tinyMCECommentField,
 			getElement<HTMLIFrameElement>(SELECTORS.tinyMCEFrame).contentDocument
 		),
 		"❤️"
-	)
-);
+	)();
+};
 
 const supercomment = () => {
 	// get the selection, if any

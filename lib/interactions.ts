@@ -6,7 +6,7 @@ function getElement<T extends HTMLElement>(
 	selector: string | T,
 	parent: ParentNode = document
 ): T {
-	if (selector instanceof HTMLElement) return selector;
+	if (typeof selector === "object") return selector;
 	let element: T = parent.querySelector(selector);
 	if (element === null)
 		throw new Error(`no element found for selector: "${selector}"`);

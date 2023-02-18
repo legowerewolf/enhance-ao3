@@ -47,7 +47,13 @@ const createRecBookmark = doSequence(setProperty(SELECTORS.bookmarkRecCheckbox, 
 const createPrivateBookmark = doSequence(setProperty(SELECTORS.bookmarkPrivateCheckbox, "checked", true), createBookmark);
 const goToNextPage = doFirst(click(SELECTORS.indexNextPageLink), click(SELECTORS.workNextChapterLink), click(SELECTORS.seriesNextWorkLink));
 const goToPreviousPage = doFirst(click(SELECTORS.indexPreviousPageLink), click(SELECTORS.workPreviousChapterLink), click(SELECTORS.seriesPreviousWorkLink));
-const superkudos = doSequence(click(SELECTORS.kudosButton), appendText(getElement(SELECTORS.tinyMCECommentField, getElement(SELECTORS.tinyMCEFrame).contentDocument), "❤️"));
+// this gets wrapped in a closure so the inner getElement call is evaluated at
+// runtime - otherwise it would be evaluated when the script loads, when the
+// element doesn't exist yet. Otherwise, this would be a doSequence.
+const superkudos = () => {
+    click(SELECTORS.kudosButton)();
+    appendText(getElement(SELECTORS.tinyMCECommentField, getElement(SELECTORS.tinyMCEFrame).contentDocument), "❤️")();
+};
 const supercomment = () => {
     // get the selection, if any
     let selection = document.getSelection();

@@ -2,7 +2,7 @@
 // @name            AO3 Hotkeys (branch:beta)
 // @namespace       legowerewolf.net
 // @author          Lego (@legowerewolf)
-// @version         0.5.15
+// @version         0.5.16
 // @description     Adds hotkeys to AO3 for navigation and work- and series-related actions.
 // @homepageURL     https://github.com/legowerewolf/Userscripts/tree/beta
 // @supportURL      https://github.com/legowerewolf/Userscripts/issues/new?labels=ao3-helpers
@@ -92,7 +92,13 @@ const goToPreviousPage = doFirst(
 
 const superkudos = doSequence(
 	click(SELECTORS.kudosButton),
-	appendText(SELECTORS.tinyMCECommentField, "❤️")
+	appendText(
+		getElement<HTMLBodyElement>(
+			SELECTORS.tinyMCECommentField,
+			getElement<HTMLIFrameElement>(SELECTORS.tinyMCEFrame).contentDocument
+		),
+		"❤️"
+	)
 );
 
 const supercomment = () => {

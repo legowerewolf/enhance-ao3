@@ -3,9 +3,10 @@
  * @returns the first element matching the selector, or throws an error if no element matches
  */
 function getElement<T extends HTMLElement>(
-	selector: string,
+	selector: string | T,
 	parent: ParentNode = document
 ): T {
+	if (selector instanceof HTMLElement) return selector;
 	let element: T = parent.querySelector(selector);
 	if (element === null)
 		throw new Error(`no element found for selector: "${selector}"`);
@@ -23,6 +24,11 @@ function getElements<T extends HTMLElement>(selector: string): Array<T> {
 	return Array.from(elements);
 }
 
+/**
+ * @param emitter an object that you can place event listeners on
+ * @param event the name of the event to listen for
+ * @returns a promise that resolves when the event is fired
+ */
 function listenForEvent(emitter: EventTarget, event: string) {
 	return new Promise<void>((resolve) => {
 		const listener = () => {
@@ -38,7 +44,7 @@ function listenForEvent(emitter: EventTarget, event: string) {
  * @param selector a CSS selector
  * @returns nothing, but propogates any errors thrown by getElement
  */
-const click = (selector: string) => () => {
+const click = (selector: Parameters<typeof getElement>[0]) => () => {
 	let element = getElement(selector);
 	element.click();
 };
@@ -51,7 +57,11 @@ const click = (selector: string) => () => {
  * @returns nothing, but propogates any errors thrown by getElement
  */
 const setProperty =
-	<T extends HTMLElement>(selector: string, property: keyof T, value: any) =>
+	<T extends HTMLElement>(
+		selector: Parameters<typeof getElement<T>>[0],
+		property: keyof T,
+		value: any
+	) =>
 	() => {
 		let element = getElement<T>(selector);
 		element[property] = value;
@@ -65,7 +75,12 @@ const setProperty =
  * @returns nothing, but propogates any errors thrown by getElement
  */
 const setAttribute =
-	(selector: string, attribute: string, value: string) => () => {
+	(
+		selector: Parameters<typeof getElement>[0],
+		attribute: string,
+		value: string
+	) =>
+	() => {
 		let element = getElement(selector);
 		element.setAttribute(attribute, value);
 	};
@@ -75,20 +90,21 @@ const setAttribute =
  * @param text content to append to the selected element
  * @returns nothing, but propogates any errors thrown by getElement, and throws an error if the selected element is not an input or textarea
  */
-const appendText = (selector: string, text: string) => () => {
-	let element = getElement(selector);
-	if (element instanceof HTMLInputElement) {
-		element.value += text;
-	} else if (element instanceof HTMLTextAreaElement) {
-		element.value += text;
-	} else if (element instanceof HTMLElement && element.contentEditable) {
-		element.lastElementChild.textContent += text;
-	} else {
-		throw new Error(
-			`selected element is not an input or textarea: "${selector}": ${element}`
-		);
-	}
-};
+const appendText =
+	(selector: Parameters<typeof getElement>[0], text: string) => () => {
+		let element = getElement(selector);
+		if (element instanceof HTMLInputElement) {
+			element.value += text;
+		} else if (element instanceof HTMLTextAreaElement) {
+			element.value += text;
+		} else if (element instanceof HTMLElement && element.contentEditable) {
+			element.lastElementChild.textContent += text;
+		} else {
+			throw new Error(
+				`selected element is not an input or textarea: "${selector}": ${element}`
+			);
+		}
+	};
 
 /**
  * @param actions a list of functions to call in order

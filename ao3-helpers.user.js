@@ -2,7 +2,7 @@
 // @name            AO3 Hotkeys (branch:beta)
 // @namespace       legowerewolf.net
 // @author          Lego (@legowerewolf)
-// @version         0.5.15
+// @version         0.5.16
 // @description     Adds hotkeys to AO3 for navigation and work- and series-related actions.
 // @homepageURL     https://github.com/legowerewolf/Userscripts/tree/beta
 // @supportURL      https://github.com/legowerewolf/Userscripts/issues/new?labels=ao3-helpers
@@ -47,7 +47,7 @@ const createRecBookmark = doSequence(setProperty(SELECTORS.bookmarkRecCheckbox, 
 const createPrivateBookmark = doSequence(setProperty(SELECTORS.bookmarkPrivateCheckbox, "checked", true), createBookmark);
 const goToNextPage = doFirst(click(SELECTORS.indexNextPageLink), click(SELECTORS.workNextChapterLink), click(SELECTORS.seriesNextWorkLink));
 const goToPreviousPage = doFirst(click(SELECTORS.indexPreviousPageLink), click(SELECTORS.workPreviousChapterLink), click(SELECTORS.seriesPreviousWorkLink));
-const superkudos = doSequence(click(SELECTORS.kudosButton), appendText(SELECTORS.tinyMCECommentField, "❤️"));
+const superkudos = doSequence(click(SELECTORS.kudosButton), appendText(getElement(SELECTORS.tinyMCECommentField, getElement(SELECTORS.tinyMCEFrame).contentDocument), "❤️"));
 const supercomment = () => {
     // get the selection, if any
     let selection = document.getSelection();

@@ -2,7 +2,7 @@
 // @name            AO3 Hotkeys (branch:beta)
 // @namespace       legowerewolf.net
 // @author          Lego (@legowerewolf)
-// @version         0.5.12
+// @version         0.5.13
 // @description     Adds hotkeys to AO3 for navigation and work- and series-related actions.
 // @homepageURL     https://github.com/legowerewolf/Userscripts/tree/beta
 // @supportURL      https://github.com/legowerewolf/Userscripts/issues/new?labels=ao3-helpers
@@ -20,6 +20,7 @@ const SELECTORS = {
     kudosButton: "#kudo_submit",
     plainCommentField: "textarea.comment_form",
     tinyMCECommentField: "#tinymce",
+    tinyMCEFrame: "#comment-form iframe",
     chaptersStatsSpan: ".stats dd.chapters",
     markForLaterButton: "li.mark a",
     shareButton: "li.share a",
@@ -49,7 +50,6 @@ const goToPreviousPage = doFirst(click(SELECTORS.indexPreviousPageLink), click(S
 const superkudos = doSequence(click(SELECTORS.kudosButton), appendText(SELECTORS.tinyMCECommentField, "❤️"));
 const supercomment = () => {
     // get the selection, if any
-    getElement(SELECTORS.workBody).focus();
     let selection = document.getSelection();
     if (selection.type !== "Range")
         return;
@@ -57,7 +57,7 @@ const supercomment = () => {
     let anchor = selection.anchorNode;
     let value = selection.getRangeAt(0).cloneContents();
     // update the comment field and place the cursor at the end
-    const commentField = getElement(SELECTORS.tinyMCECommentField);
+    const commentField = getElement(SELECTORS.tinyMCECommentField, getElement(SELECTORS.tinyMCEFrame).contentDocument);
     let quote = document.createElement("blockquote");
     quote.appendChild(value);
     commentField.appendChild(quote);

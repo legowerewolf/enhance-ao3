@@ -2,8 +2,11 @@
  * @param selector a CSS selector
  * @returns the first element matching the selector, or throws an error if no element matches
  */
-function getElement<T extends HTMLElement>(selector: string): T {
-	let element: T = document.querySelector(selector);
+function getElement<T extends HTMLElement>(
+	selector: string,
+	parent: ParentNode = document
+): T {
+	let element: T = parent.querySelector(selector);
 	if (element === null)
 		throw new Error(`no element found for selector: "${selector}"`);
 	return element;

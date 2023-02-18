@@ -1,4 +1,5 @@
 {
 	"conventionalCommits.gitmoji": false,
-	"git.branchProtection": ["main", "beta"]
+	"git.branchProtection": ["main", "beta"],
+	"git.branchProtectionPrompt": "alwaysCommitToNewBranch"
 }

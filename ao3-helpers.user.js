@@ -2,7 +2,7 @@
 // @name            AO3 Hotkeys (branch:beta)
 // @namespace       legowerewolf.net
 // @author          Lego (@legowerewolf)
-// @version         0.5.10
+// @version         0.5.11
 // @description     Adds hotkeys to AO3 for navigation and work- and series-related actions.
 // @homepageURL     https://github.com/legowerewolf/Userscripts/tree/beta
 // @supportURL      https://github.com/legowerewolf/Userscripts/issues/new?labels=ao3-helpers
@@ -224,6 +224,19 @@ function addPrefetchLinks() {
     }
     catch { }
 }
+async function injectRTE() {
+    const scripts = [
+        "/javascripts/tinymce/tinymce.min.js",
+        "/javascripts/mce_editor.min.js",
+    ];
+    for (const src of scripts) {
+        let el = Object.assign(document.createElement("script"), { src });
+        document.head.appendChild(el);
+        await new Promise((resolve) => (el.onload = resolve));
+    }
+    const commentField = getElement(SELECTORS.commentField);
+    addEditor(commentField.id);
+}
 function markHotkeys(hotkey_display_map) {
     for (const selector in hotkey_display_map) {
         try {
@@ -253,6 +266,8 @@ function main() {
         catch (error) {
             console.error("Could not get work data.", error);
         }
+        // inject rich text editor
+        injectRTE();
     }
     engine.attach(document.body);
 }

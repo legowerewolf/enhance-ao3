@@ -2,7 +2,7 @@
 // @name            AO3 Enhancement Suite (branch:main)
 // @namespace       legowerewolf.net
 // @author          Lego (@legowerewolf)
-// @version         1.0.0
+// @version         1.1.0
 // @description     Enhances the AO3 reading experience with hotkeys and other features.
 // @homepageURL     https://github.com/legowerewolf/enhance-ao3/tree/main
 // @supportURL      https://github.com/legowerewolf/enhance-ao3/issues/new?labels=ao3-helpers
@@ -18,6 +18,7 @@
 const SELECTORS = {
     workBody: "#workskin",
     kudosButton: "#kudo_submit",
+    commentsRegion: "#comments_placeholder",
     plainCommentField: "textarea.comment_form",
     tinyMCECommentField: "#tinymce",
     tinyMCEFrame: "div.tox-editor-container iframe",
@@ -30,6 +31,7 @@ const SELECTORS = {
     bookmarkRecCheckboxLabel: "label[for='bookmark_rec']",
     bookmarkPrivateCheckbox: "#bookmark_private",
     bookmarkPrivateCheckboxLabel: "label[for='bookmark_private']",
+    bookmarkCommentForm: "#bookmark_notes",
     subscribeButton: "#new_subscription input[type='submit']",
     hiddenSubscribeDeleteInput: "#new_subscription input[name='_method'][value='delete']",
     viewWorkEntireButton: "li.chapter.entire a",
@@ -247,8 +249,25 @@ async function injectRTE() {
         document.head.appendChild(el);
         await listenForEvent(el, "load");
     }
-    const commentField = getElement(SELECTORS.plainCommentField);
-    addEditor(commentField.id);
+    addEditor(getElement(SELECTORS.plainCommentField).id);
+    addEditor(getElement(SELECTORS.bookmarkCommentForm).id);
+    const mutationObserver = new MutationObserver((mutations) => {
+        mutations
+            .filter(({ type }) => type === "childList")
+            .forEach(({ addedNodes }) => {
+            Array.from(addedNodes ?? [])
+                .filter((node) => node instanceof Element)
+                .forEach((element) => {
+                const textarea = element.querySelector("textarea");
+                if (textarea && textarea.id)
+                    addEditor(textarea.id);
+            });
+        });
+    });
+    mutationObserver.observe(getElement(SELECTORS.commentsRegion), {
+        childList: true,
+        subtree: true,
+    });
 }
 function markHotkeys(hotkey_display_map) {
     for (const selector in hotkey_display_map) {

@@ -2,7 +2,7 @@
 // @name            AO3 Enhancement Suite (branch:main)
 // @namespace       legowerewolf.net
 // @author          Lego (@legowerewolf)
-// @version         1.1.0
+// @version         1.2.0
 // @description     Enhances the AO3 reading experience with hotkeys and other features.
 // @homepageURL     https://github.com/legowerewolf/enhance-ao3/tree/main
 // @supportURL      https://github.com/legowerewolf/enhance-ao3/issues/new?labels=ao3-helpers
@@ -399,7 +399,7 @@ function main() {
   HOTKEYS.forEach(([keys, handler]) => engine.registerAction(keys, handler));
 
   // work processing
-  if (document.querySelector("#workskin")) {
+  if (document.querySelector(SELECTORS.workBody)) {
     // add work-specific hotkeys
     WORK_HOTKEYS.forEach(([keys, handler]) =>
       engine.registerAction(keys, handler)
@@ -412,7 +412,9 @@ function main() {
     } catch (error) {
       console.error("Could not get work data.", error);
     }
+  }
 
+  if (document.querySelector(SELECTORS.plainCommentField)) {
     // inject rich text editor
     injectRTE();
   }
